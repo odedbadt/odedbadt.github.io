@@ -1,3 +1,18 @@
+function progress_pixel(data, offset) {
+    before = data[offset];
+    if (before % 2 == 0) {
+        var after = before + 2;
+        if (after == 254) {
+            after = 253;
+        }
+    } else {
+        var after = before - 2;
+        if (after == 4) {
+            after = 3;
+        }
+    }
+    data[offset] = after;
+}
 function add_circle(cx, cy) {
     var canvas_element = $('.canvas')[0]
     var context = canvas_element.getContext('2d')
@@ -10,23 +25,20 @@ function add_circle(cx, cy) {
     dg = delta;
     db = delta;
     context.fillStyle = color.css();
-    var pixel_data = context.getImageData(cx - 15, cy - 15, 30, 30);
-    for (var y = -15; y < 15; ++y) {
-        for (var x = -15; x < 15; ++x) {
-            if (x * x + y * y > 15 * 15) {
+    var pixel_data = context.getImageData(cx - 20, cy - 20, 40, 40);
+    for (var y = -20; y < 20; ++y) {
+        for (var x = -20; x < 20; ++x) {
+            if (x * x + y * y > 20 * 20) {
                 continue;
             }
-            var base_offset = ((y + 15) * 30 + x + 15) * 4;
-            pixel_data.data[base_offset] =
-                ((pixel_data.data[base_offset] || 0) + dr) % 255;
-            pixel_data.data[base_offset + 1] =
-                ((pixel_data.data[base_offset + 1] || 0) + dg) % 255;
-            pixel_data.data[base_offset + 2] =
-                ((pixel_data.data[base_offset + 2] || 0) + db) % 255;
+            var base_offset = ((y + 20) * 40 + x + 20) * 4;
+            progress_pixel(pixel_data.data, base_offset)
+            progress_pixel(pixel_data.data, base_offset + 1)
+            progress_pixel(pixel_data.data, base_offset + 2)
             pixel_data.data[base_offset + 3] = 255;
         }
     }
-    context.putImageData(pixel_data, cx - 15, cy - 15);
+    context.putImageData(pixel_data, cx - 20, cy - 20);
 }
 function add_random_circle(offsetX, offsetY) {
     var r = Math.random();

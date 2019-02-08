@@ -1,0 +1,134 @@
+<body>
+    <div id="container"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/101/three.min.js"></script>
+    <script id="vertexShader" type="x-shader/x-vertex">
+        void main() {
+            gl_Position = vec4( position, 1.0 );
+        }
+    </script>
+    <script id="fragmentShader" type="x-shader/x-fragment">
+
+// Author:
+// Title:
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+
+const vec3 WAVE_COLOR = vec3(0.1, 0.1, 0.3);
+const vec3 BACK_COLOR = vec3(0.325, 0.375, 0.475);
+
+vec2 square(vec2 v) {
+    float w = v.x * v.x - v.y * v.y;
+    float z = 2.0 * v.x * v.y;
+    return vec2(w, z);
+}
+float norm2(vec2 v) {
+    return v.x * v.x + v.y * v.y;
+}
+float loop(vec2 S, vec2 P) {
+    int C = 256;
+    vec2 A = S;
+    for (int i = 0; i < 256; i++) {
+      if (norm2(A) > 4.0) {
+        break;
+      }
+      A = square(A) + P;
+      C = C - 1;
+    }
+    return float(C) / 256.0;
+
+}
+void main( void ) {
+    vec2 coord = 4.0 * (( gl_FragCoord.xy / u_resolution.y ) -0.5);
+    vec2 mouse = 4.0 * (( u_mouse.xy / u_resolution.y ) - 0.5);
+    vec2 offset = vec2(-0.75,0.75);
+    //vec2 mcoord = coord + offset;
+    //vec2 jmouse = mouse + offset;
+    vec2 origin = vec2(0.0, 0.0);
+    float J = loop(coord, mouse);
+    float M = loop(origin, coord);
+    float alpha = 1.0;
+    /*if (norm2(coord)  < 0.02) {
+       alpha = 0.0;
+    }
+    if (norm2(mcoord) < 0.02) {
+       alpha = 0.7;
+    }
+    if (norm2(mouse - coord)  < 0.0) {
+       alpha = 0.0;
+    }
+    if (norm2(jmouse - coord) < 0.01) {
+       alpha = 0.7;
+    }*/
+    gl_FragColor = vec4(M, J , 0.0 , alpha) * alpha;
+}
+    </script>
+    <script>
+        var container;
+        var camera, scene, renderer;
+        var uniforms;
+
+        init();
+        animate();
+
+        function init() {
+            container = document.getElementById( 'container' );
+
+            camera = new THREE.Camera();
+            camera.position.z = 1;
+
+            scene = new THREE.Scene();
+
+            var geometry = new THREE.PlaneBufferGeometry( 2, 2 );
+
+            uniforms = {
+                u_time: { type: "f", value: 1.0 },
+                u_resolution: { type: "v2", value: new THREE.Vector2() },
+                u_mouse: { type: "v2", value: new THREE.Vector2() }
+            };
+
+            var material = new THREE.ShaderMaterial( {
+                uniforms: uniforms,
+                vertexShader: document.getElementById( 'vertexShader' ).textContent,
+                fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+            } );
+
+            var mesh = new THREE.Mesh( geometry, material );
+            scene.add( mesh );
+
+            renderer = new THREE.WebGLRenderer();
+            renderer.setPixelRatio( window.devicePixelRatio );
+
+            container.appendChild( renderer.domElement );
+
+            onWindowResize();
+            window.addEventListener( 'resize', onWindowResize, false );
+
+            document.onmousemove = function(e){
+              uniforms.u_mouse.value.x = e.pageX
+              uniforms.u_mouse.value.y = e.pageY
+            }
+        }
+
+        function onWindowResize( event ) {
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            uniforms.u_resolution.value.x = renderer.domElement.width;
+            uniforms.u_resolution.value.y = renderer.domElement.height;
+        }
+
+        function animate() {
+            requestAnimationFrame( animate );
+            render();
+        }
+
+        function render() {
+            uniforms.u_time.value += 0.05;
+            renderer.render( scene, camera );
+        }
+    </script>
+</body>
