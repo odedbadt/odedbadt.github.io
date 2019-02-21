@@ -75,6 +75,14 @@ void main( void ) {
         G = 0.0;
         R = 1.0;
     }
+    if ((abs(coord_m.x) <= 0.004) && (abs(coord_m.y) < 0.2)) {
+        G = 1.0;
+        R = 0.0;
+    }
+    if ((abs(coord_m.y) <= 0.004) && (abs(coord_m.x) < 0.2)) {
+        G = 1.0;
+        R = 0.0;
+    }
     gl_FragData[0] = vec4(R, G, B, 1.0);
 }
     </script>

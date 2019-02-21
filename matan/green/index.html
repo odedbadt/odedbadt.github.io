@@ -1,0 +1,200 @@
+<body>
+    <p id="text"></p>
+    <div id="container"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/101/three.min.js"></script>
+    <script id="vertexShader" type="x-shader/x-vertex">
+        void main() {
+            gl_Position = vec4( position, 1.0 );
+        }
+    </script>
+    <style type="text/css">
+        canvas {
+            cursor: crosshair;
+        }
+        #container {
+            cursor: crosshair;
+        }
+</style>
+    <script id="fragmentShader" type="x-shader/x-fragment">
+
+// Author:
+// Title:
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform float u_time;
+uniform vec2 u_offset;
+uniform float u_scale;
+
+const int MAX_ITERACTIONS = 1000;
+const float SQUARED_BAILOUT = 4.0;
+vec2 square(vec2 v) {
+    float w = v.x * v.x - v.y * v.y;
+    float z = 2.0 * v.x * v.y;
+    return vec2(w, z);
+}
+float norm2(vec2 v) {
+    return v.x * v.x + v.y * v.y;
+}
+float loop(vec2 S, vec2 P) {
+    int C = MAX_ITERACTIONS;
+    vec2 A = S;
+    for (int i = 0; i < MAX_ITERACTIONS; i++) {
+      if (norm2(A) > SQUARED_BAILOUT) {
+        break;
+      }
+      A = square(A) + P;
+      C = C - 1;
+    }
+    return pow(float(C) / float(MAX_ITERACTIONS), 15.0);
+
+}
+void main( void ) {
+    vec2 coord = u_scale * (gl_FragCoord.xy / u_resolution.y) + u_offset;
+    vec2 mouse = u_scale * u_mouse + u_offset;
+    //mouse.y = 1.0 - mouse.y;
+    vec2 origin = vec2(0.0, 0.0);
+    float M = loop(origin, coord);
+    float R = 0.0;
+    float G = M;
+    float B = 0.0;
+    float alpha = 1.0;
+    float pixel_height = u_scale / u_resolution.y;
+     if (((abs(mouse.x - coord.x) <= pixel_height) && (abs(mouse.y - coord.y) <= pixel_height * 20.0)) ||
+         ((abs(mouse.x - coord.x) <= pixel_height * 20.0) && (abs(mouse.y - coord.y) <= pixel_height ))) {
+        G = 1.0;
+        R = 0.0;
+        B = 1.0;
+    }
+    gl_FragData[0] = vec4(R, G, B, 1.0);
+}
+    </script>
+    <script>
+        var container;
+        var camera, scene, renderer;
+        var uniforms;
+        var scale = 4.0;
+        var mouse = new THREE.Vector2(0,0);
+        var offset = new THREE.Vector2(-3, -2);
+        var log = [];
+        var logm = [];
+        var res;
+        var alpha = 0.99;
+        var mousemoved = false;
+        var pause = false;
+        init();
+        animate();
+
+        function init() {
+            container = document.getElementById( 'container' );
+
+            camera = new THREE.Camera();
+            camera.position.z = 1;
+
+            scene = new THREE.Scene();
+
+            var geometry = new THREE.PlaneBufferGeometry( 2, 2 );
+
+            uniforms = {
+                u_time: { type: "f", value: 1.0 },
+                u_resolution: { type: "v2", value: new THREE.Vector2() },
+                u_mouse: { type: "v2", value: new THREE.Vector2() },
+                u_scale: { type: "f", value: scale },
+                u_offset: { type: "v2", value: offset },
+            };
+
+            var material = new THREE.ShaderMaterial( {
+                uniforms: uniforms,
+                vertexShader: document.getElementById( 'vertexShader' ).textContent,
+                fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+            } );
+
+            var mesh = new THREE.Mesh( geometry, material );
+            scene.add( mesh );
+
+            renderer = new THREE.WebGLRenderer();
+            res = new THREE.Vector2(renderer.domElement.width,renderer.domElement.height);
+            renderer.setPixelRatio( window.devicePixelRatio );
+
+            container.appendChild( renderer.domElement );
+
+            onWindowResize();
+            window.addEventListener( 'resize', onWindowResize, false );
+
+            document.onmousemove = function(e){
+              mouse.x = e.offsetX;
+              mouse.y = e.offsetY;
+              logm.push(mouse.x);
+            }
+            document.onmouseclick = function(e){
+              pause = !pause;
+            }
+
+        }
+
+        function onWindowResize( event ) {
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            res.x = window.innerWidth;
+            res.y = window.innerHeight;
+            uniforms.u_resolution.value = res;
+        }
+
+        function animate() {
+
+          //setTimeout(function() {
+            requestAnimationFrame( animate );
+        //}, 100);
+          if (!pause) {
+            render();
+        }
+        }
+
+        function render() {
+            //var m = mouse.clone();
+            //m.divideScalar(res.y);
+            //scale = 0.9;
+            //offset = new THREE.Vector2(0.1, 0.1 )
+            //log.push(mouse.x);
+            var m = mouse.clone();
+            //log.push(mouse.x);
+            m.divideScalar(res.y);
+            m.y = 1 - m.y;
+            //if (m.x > 0.1) {
+              //  mousemoved = true;
+            //} else if (mousemoved && m.x < 0.0001) {
+            //console.log(m.y * scale + offset.y, 0.5  * scale + offset.y);
+            //}
+
+            //var p = uniforms.u_scale.value;
+            //var offset = uniforms.u_offset.value;
+            //a:=(p + q)/(e*m - e + 1), }
+
+            //b:=(q*(e*m - e + 1) - (b + e*m)*(p + q))/(a*(e*m - e + 1)))
+            //console.log(m, scale, b);
+            m2 = m.clone();
+
+
+            log.push([scale * m.x + offset.x, m.x, m2.x, scale, offset.x]);
+            m2.multiplyScalar(scale * (1 - alpha));
+            offset.add(m2);
+            scale = scale * alpha;
+
+
+
+
+            uniforms.u_mouse.value = m;
+            uniforms.u_scale.value = scale;
+            uniforms.u_offset.value = offset;
+            //uniforms.u_offset.value = m.multiplyScalar(scale).add(offset);
+           // console.log(uniforms.u_mouse.value);
+           document.getElementById('text').innerHTML = scale + ',' + offset.x;
+            renderer.render( scene, camera );
+            //pause = true;
+        }
+    </script>
+</body>
+
