@@ -177,7 +177,9 @@ void main( void ) {
             //console.log(m, scale, b);
             m2 = m.clone();
 
-
+            if (scale < 0.001 || scale > 5.0) {
+                alpha = 1/alpha;
+            }
             log.push([scale * m.x + offset.x, m.x, m2.x, scale, offset.x]);
             m2.multiplyScalar(scale * (1 - alpha));
             offset.add(m2);
