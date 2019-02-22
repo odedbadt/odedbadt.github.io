@@ -1,5 +1,4 @@
 <body>
-    <p id="text"></p>
     <div id="container"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/101/three.min.js"></script>
     <script id="vertexShader" type="x-shader/x-vertex">
@@ -193,7 +192,6 @@ void main( void ) {
             uniforms.u_offset.value = offset;
             //uniforms.u_offset.value = m.multiplyScalar(scale).add(offset);
            // console.log(uniforms.u_mouse.value);
-           document.getElementById('text').innerHTML = scale + ',' + offset.x;
             renderer.render( scene, camera );
             //pause = true;
         }
