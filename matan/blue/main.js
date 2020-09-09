@@ -74,7 +74,7 @@ function ontouch(event) {
   var touches = event.changedTouches;
 
   for (var i = 0; i < touches.length; i++) {
-        state.points.push([touches[i].pageX, touches[i].pageY])
+        state.points.push([touches[i].clientX, touches[i].clientY])
     }
 }
 function onmove(event) {
