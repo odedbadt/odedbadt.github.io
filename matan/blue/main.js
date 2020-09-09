@@ -68,6 +68,9 @@ function scale(u, p) {
     return [u*p[0], u*p[1]];
 }
 function ontouch(event) {
+  state.on = false;
+  state.dirty = true;
+
   var touches = event.changedTouches;
 
   for (var i = 0; i < touches.length; i++) {
@@ -103,9 +106,9 @@ function ignite() {
     canvas_element.addEventListener('mouseleave', turn_off)
     canvas_element.addEventListener('mouseout', turn_off)
     canvas_element.addEventListener('mousemove', onmove)
-    canvas_element.addEventListener("touchstart", turn_on, false);
-    canvas_element.addEventListener("touchend", turn_off, false);
-    canvas_element.addEventListener("touchmove", onmove, false);
+    canvas_element.addEventListener("touchstart", ontouch);
+    canvas_element.addEventListener("touchend", turn_off);
+    canvas_element.addEventListener("touchmove", ontouch);
       window.addEventListener('resize', resize)
     loop();
 }
