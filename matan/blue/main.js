@@ -33,7 +33,7 @@ function render() {
     for (var ang = 0; ang < 360; ang += 360/7) {
         for (var m = -1; m < 2; m +=2) {
             var transform = function(p) {
-                var r = shift([half, half], rotate(ang, shift([-half, -half], p)));
+                var r = shift([state.W/2, state.H/2], rotate(ang, shift([-state.W/2, -state.H/2], p)));
                 if (m == -1) {
                     return [r[0], state.unit-r[1]];
                 } else {
