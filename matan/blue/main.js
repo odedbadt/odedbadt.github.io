@@ -75,9 +75,6 @@ function ontouch(event) {
     }
 }
 function onmove(event) {
-    if event.touches {
-
-    }
     if (state.on) {
         state.points.push([event.offsetX, event.offsetY])
         state.dirty = true;
