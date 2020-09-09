@@ -35,7 +35,7 @@ function render() {
             var transform = function(p) {
                 var r = shift([state.W/2, state.H/2], rotate(ang, shift([-state.W/2, -state.H/2], p)));
                 if (m == -1) {
-                    return [r[0], state.unit-r[1]];
+                    return [r[0], state.H-r[1]];
                 } else {
                     return r;
                 }
