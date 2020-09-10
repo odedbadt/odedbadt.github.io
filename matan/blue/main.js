@@ -1,7 +1,8 @@
 var state = {
     on: false,
     points: [],
-    dirty: true
+    dirty: true,
+    color: 'blue'
 }
 function cmult(p1, p2) {
     return [p1[0]*p2[0] - p1[1]*p2[1], p1[0]*p2[1] + p1[1]*p2[0]]
@@ -16,16 +17,14 @@ function shift(offset, p) {
 function scale(u, p) {
     return [u*p[0], u*p[1]];
 }
-
+var count = 0;
 function render() {
-    if (!state.dirty) {
-        return;
-    }
-
-    var ctx = state.context;
+    var ctx = $('.canvas')[0].getContext('2d');
     ctx.clearRect(0, 0, state.W, state.H);
-    ctx.strokeStyle = 'red';
-    ctx.fillStyle ='blue';
+    draw_pallette();
+    $('.canvas')[0].getContext('2d').drawImage($('.offscreen_buffer')[0], 0, 0);
+    ctx.strokeStyle = state.color;
+    ctx.fillStyle =state.color;
     ctx.lineWidth = 10;
     ctx.lineJoin = 'round';
 
@@ -71,12 +70,15 @@ function loop() {
 
 function turn_on(event) {
     state.on = true;
-    state.dirty = true;
+    render();
     state.points.push([event.offsetX, event.offsetY])
 }
 function turn_off() {
     state.on = false;
     state.points = [];
+    $('.offscreen_buffer')[0].getContext('2d').drawImage($('.canvas')[0], 0, 0);
+
+
 }
 function ontouch(event) {
   event.stopPropagation();
@@ -87,40 +89,70 @@ function ontouch(event) {
   for (var i = 0; i < touches.length; i++) {
     state.points.push([touches[i].clientX, touches[i].clientY])
   }
-  state.dirty = true;
+  render();
 }
 function onmove(event) {
     if (state.on) {
         state.points.push([event.offsetX, event.offsetY])
-        state.dirty = true;
+        render();
     }
 
 }
 function resize() {
-  canvas_element = $('.canvas')[0];
-  state.W = window.innerWidth;
+  state.W = window.innerWidth*0.9;
   state.H = window.innerHeight;
-  canvas_element.width = state.W;
-  canvas_element.height = state.H;
-  state.context = canvas_element.getContext('2d');
+  canvas_elements = $('canvas');
+  $('.canvas').attr('width', window.innerWidth*0.9);
+  $('.canvas').attr('height', window.innerHeight);
+  $('.offscreen_buffer').attr('width', window.innerWidth*0.9);
+  $('.offscreen_buffer').attr('height', window.innerHeight);
+  $('.canvas').css('left', window.innerWidth*0.1);
+  $('.offscreen_buffer').css('left', window.innerWidth*0.1);
+  $('.pallette').attr('height', window.innerHeight);
+  $('.pallette').attr('width', window.innerWidth*0.1);
   state.unit = Math.min(state.W, state.H);
-  canvas_element.width = window.innerWidth;
-  canvas_element.height = window.innerHeight;
-  state.dirty = true;
+  render();
+}
+function draw_pallette() {
+    var ctx = $('.pallette')[0].getContext('2d');
+    var img = new Image();
+    img.src = 'pallette.png'
+    ctx.imageSmoothingEnabled= false;
+    ctx.drawImage(img, 0, 0, state.W/10, state.H);
+}
+function rgbToHex(r, g, b) {
+    if (r > 255 || g > 255 || b > 255)
+        throw "Invalid color component";
+    return ((r << 16) | (g << 8) | b).toString(16);
+}
+function choose_color(event) {
+    var ctx = $('.pallette')[0].getContext('2d');
+    var touches = event.changedTouches;
+    var offsetX = event.offsetX;
+    if (touches) {
+        var x = touches[touches.length - 1].offsetX;
+        var y = touches[touches.length - 1].offsetY;
+    } else {
+        var x = event.offsetX;
+        var y = event.offsetY;
+    }
+    var p = ctx.getImageData(x, y, 1, 1).data;
+    var hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
+    state.color = hex;
+
 }
 function ignite() {
-    canvas_element = $('.canvas')[0]
-    state.W = window.innerWidth;
-    state.H = window.innerHeight;
     resize();
-    canvas_element.addEventListener('mousedown', turn_on)
-    canvas_element.addEventListener('mouseup', turn_off)
-    canvas_element.addEventListener('mouseleave', turn_off)
-    canvas_element.addEventListener('mouseout', turn_off)
-    canvas_element.addEventListener('mousemove', onmove)
-    canvas_element.addEventListener("touchstart", ontouch, false);
-    canvas_element.addEventListener("touchend", turn_off, false);
-    canvas_element.addEventListener("touchmove", ontouch, false);
+    $('.canvas').on('mousedown', turn_on)
+    $('.canvas').on('mouseup', turn_off)
+    $('.canvas').on('mouseleave', turn_off)
+    $('.canvas').on('mouseout', turn_off)
+    $('.canvas').on('mousemove', onmove)
+    $('.canvas').on("touchstart", ontouch);
+    $('.canvas').on("touchend", turn_off);
+    $('.canvas').on("touchmove", ontouch);
+    $('.pallette').on('mousedown', choose_color)
+    $('.pallette').on("touchstart", choose_color);
+    $('.pallette').on("touchmove", choose_color);
     window.addEventListener('resize', resize)
-    loop();
 }

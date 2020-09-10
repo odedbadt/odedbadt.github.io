@@ -3,8 +3,21 @@
     <style type="text/css">
     .canvas {
         position: absolute;
+        background-color: #FFF;
+        cursor: crosshair;
+        z-index: 1;
+    }
+    .offscreen_buffer {
+        position: absolute;
         background-color: #000;
         cursor: crosshair;
+        z-index: 0;
+    }
+    .pallette {
+        position: absolute;
+        background-color: #000;
+        cursor: crosshair;
+        z-index: 1;
     }
     html, body {
       width:  100%;
@@ -14,10 +27,12 @@
     </style>
     <script src='jquery-3.3.1.js'></script>
     <script src='color.min.js'></script>
-    <script src='main.js'></script>
+    <script src='main.js?ts=19'></script>
 </head>
 <body>
+    <canvas class='offscreen_buffer'></canvas>
     <canvas class='canvas'></canvas>
+    <canvas class='pallette'></canvas>
 </body>
 <script>ignite()</script>
 </html>
