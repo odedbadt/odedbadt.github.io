@@ -21,8 +21,8 @@ var count = 0;
 function render() {
     var ctx = $('.canvas')[0].getContext('2d');
     ctx.clearRect(0, 0, state.W, state.H);
-    draw_pallette();
     $('.canvas')[0].getContext('2d').drawImage($('.offscreen_buffer')[0], 0, 0);
+    draw_pallette();
     ctx.strokeStyle = state.color;
     ctx.fillStyle =state.color;
     ctx.lineWidth = 10;
@@ -117,7 +117,7 @@ function draw_pallette() {
     var ctx = $('.pallette')[0].getContext('2d');
     var img = new Image();
     img.src = 'pallette.png'
-    ctx.imageSmoothingEnabled= false;
+    ctx.imageSmoothingEnabled = false;
     ctx.drawImage(img, 0, 0, state.W/10, state.H);
 }
 function rgbToHex(r, g, b) {
