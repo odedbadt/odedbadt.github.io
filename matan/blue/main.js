@@ -154,5 +154,7 @@ function ignite() {
     $('.pallette').on('mousedown', choose_color)
     $('.pallette').on("touchstart", choose_color);
     $('.pallette').on("touchmove", choose_color);
-    window.addEventListener('resize', resize)
+    window.addEventListener('resize', resize);
+    render();
+
 }
