@@ -50,7 +50,7 @@ function render() {
                     ctx.lineTo(p[0], p[1]);
                 }
             }
-            ctx.fill("nonzero");
+            ctx.stroke();
 
         }
     }
