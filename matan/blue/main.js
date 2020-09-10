@@ -87,7 +87,7 @@ function ontouch(event) {
 
   var touches = event.changedTouches;
   for (var i = 0; i < touches.length; i++) {
-    state.points.push([touches[i].clientX, touches[i].clientY])
+    state.points.push([touches[i].clientX - state.W/10, touches[i].clientY])
   }
   render();
 }
