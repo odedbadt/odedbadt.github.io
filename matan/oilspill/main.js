@@ -1,17 +1,19 @@
+var R1 = 20
+var R2 = 100
 function progress_pixel(data, offset) {
-    before = data[offset];
-    if (before % 2 == 0) {
-        var after = before + 2;
-        if (after == 254) {
-            after = 253;
-        }
-    } else {
-        var after = before - 2;
-        if (after == 4) {
-            after = 3;
-        }
-    }
-    data[offset] = after;
+
+    var r = data[offset];
+    var g = data[offset + 1];
+    var b = data[offset + 2];
+    var color = new Color(r, g, b);
+    var hslData = color.hslData();
+    var h = (hslData[0] + 0.01) % 1;
+    var s = hslData[1];
+    var l = hslData[2];
+    var rgbData = Color.hsl(h, s, l).rgbData();
+    data[offset] = rgbData[0];
+    data[offset + 1] = rgbData[1];
+    data[offset + 2] = rgbData[2];
 }
 function add_circle(cx, cy) {
     var canvas_element = $('.canvas')[0]
@@ -25,27 +27,25 @@ function add_circle(cx, cy) {
     dg = delta;
     db = delta;
     context.fillStyle = color.css();
-    var pixel_data = context.getImageData(cx - 20, cy - 20, 40, 40);
-    for (var y = -20; y < 20; ++y) {
-        for (var x = -20; x < 20; ++x) {
-            if (x * x + y * y > 20 * 20) {
+    var pixel_data = context.getImageData(cx - R1, cy - R1, R1*2, R1*2);
+    for (var y = -R1; y < R1; ++y) {
+        for (var x = -R1; x < R1; ++x) {
+            if (x * x + y * y > R1 * R1) {
                 continue;
             }
-            var base_offset = ((y + 20) * 40 + x + 20) * 4;
+            var base_offset = ((y + R1) * R1*2 + x + R1) * 4;
             progress_pixel(pixel_data.data, base_offset)
-            progress_pixel(pixel_data.data, base_offset + 1)
-            progress_pixel(pixel_data.data, base_offset + 2)
             pixel_data.data[base_offset + 3] = 255;
         }
     }
-    context.putImageData(pixel_data, cx - 20, cy - 20);
+    context.putImageData(pixel_data, cx - R1, cy - R1);
 }
 function add_random_circle(offsetX, offsetY) {
     var r = Math.random();
     var alpha = Math.random() * 2 * Math.PI;
     r = r * r;
-    var cx = offsetX + Math.cos(alpha) * r * 80;
-    var cy = offsetY + Math.sin(alpha) * r * 80;
+    var cx = offsetX + Math.cos(alpha) * r * R2;
+    var cy = offsetY + Math.sin(alpha) * r * R2;
     add_circle(cx, cy);
 }
 function onmove(event) {
@@ -56,13 +56,13 @@ function add_circle_if_on() {
     if (on) {
         add_random_circle(position[0], position[1])
     }
-    window.setTimeout(add_circle_if_on, 20)
+    window.setTimeout(add_circle_if_on, R1)
 }
 var on = false;
 function turn_on(event) {
     on = true;
     position = [event.offsetX, event.offsetY]
-    add_circle(event)
+    add_circle(event.offsetX, event.offsetY)
 }
 
 function turn_off() {
@@ -71,6 +71,9 @@ function turn_off() {
 
 function ignite() {
     var canvas_element = $('.canvas')[0]
+    var ctx = canvas_element.getContext('2d');
+    ctx.fillStyle = '#faa';
+    ctx.fillRect(0,0,1000,1000);
     console.log(canvas_element)
     canvas_element.addEventListener('mousedown', turn_on)
     canvas_element.addEventListener('mouseup', turn_off)
