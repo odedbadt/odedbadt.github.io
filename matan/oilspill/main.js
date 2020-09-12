@@ -1,19 +1,30 @@
-var R1 = 20
-var R2 = 100
-function progress_pixel(data, offset) {
+var R1 = 40;
+var R2 = 80;
+var dr = 1;
+var dg = 1;
+var db = 1;
+function mirrored_clamp(v,dv) {
+    v = v + dv;
+    if (v < 0) {
+        return [-v, -dv];
+    }
+    if (v > 255) {
+        return [255 - (v - 255), -dv];
+    }
+    return [v,dv];
+}
 
-    var r = data[offset];
-    var g = data[offset + 1];
-    var b = data[offset + 2];
-    var color = new Color(r, g, b);
-    var hslData = color.hslData();
-    var h = (hslData[0] + 0.01) % 1;
-    var s = hslData[1];
-    var l = hslData[2];
-    var rgbData = Color.hsl(h, s, l).rgbData();
-    data[offset] = rgbData[0];
-    data[offset + 1] = rgbData[1];
-    data[offset + 2] = rgbData[2];
+function progress_pixel(data, offset) {
+    for (var j = 0; j < 3; ++j) {
+        var j_1 = (j + 1) % 3;
+        if (data[offset + j] == 255
+            && data[offset + j_1] < 255) {
+                data[offset + j_1] = data[offset + j_1] + 1;
+        } else if (data[offset + j] <= 255
+            && data[offset + j_1] == 255) {
+                data[offset + j] = data[offset + j] - 1;
+        }
+    }
 }
 function add_circle(cx, cy) {
     var canvas_element = $('.canvas')[0]
@@ -28,8 +39,8 @@ function add_circle(cx, cy) {
     db = delta;
     context.fillStyle = color.css();
     var pixel_data = context.getImageData(cx - R1, cy - R1, R1*2, R1*2);
-    for (var y = -R1; y < R1; ++y) {
-        for (var x = -R1; x < R1; ++x) {
+    for (var y = -R1; y <= R1; ++y) {
+        for (var x = -R1; x <= R1; ++x) {
             if (x * x + y * y > R1 * R1) {
                 continue;
             }
@@ -43,7 +54,8 @@ function add_circle(cx, cy) {
 function add_random_circle(offsetX, offsetY) {
     var r = Math.random();
     var alpha = Math.random() * 2 * Math.PI;
-    r = r * r;
+    r = Math.sqrt(r);
+    //console.log(r);
     var cx = offsetX + Math.cos(alpha) * r * R2;
     var cy = offsetY + Math.sin(alpha) * r * R2;
     add_circle(cx, cy);
@@ -72,7 +84,7 @@ function turn_off() {
 function ignite() {
     var canvas_element = $('.canvas')[0]
     var ctx = canvas_element.getContext('2d');
-    ctx.fillStyle = '#faa';
+    ctx.fillStyle = '#F00';
     ctx.fillRect(0,0,1000,1000);
     console.log(canvas_element)
     canvas_element.addEventListener('mousedown', turn_on)
