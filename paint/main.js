@@ -4,6 +4,12 @@ var state = {
     dirty: true,
     color: 'blue'
 }
+function log(s) {
+    $('#log').text($('#log').text() + '\n' + s);
+    if ($('#log').text().length > 100) {
+        $('#log').text($('#log').text().slice($('#log').text().length - 100));
+    }
+}
 function cmult(p1, p2) {
     return [p1[0]*p2[0] - p1[1]*p2[1], p1[0]*p2[1] + p1[1]*p2[0]]
 }

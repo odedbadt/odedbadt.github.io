@@ -3,16 +3,29 @@
     <style type="text/css">
     .canvas {
         position: absolute;
-        background-color: #aaa;
         cursor: crosshair;
+        z-index: 0;
+    }
+    #log {
+        position: absolute;
+        background-color: black;
+        color: white;
+        font-family: monospace;
+        font-size: 22px;
+        cursor: crosshair;
+        z-index: 1;
+        opacity: 0.5;
     }
     </style>
     <script src='jquery-3.3.1.js'></script>
-    <script src='color.min.js'></script>
     <script src='main.js'></script>
 </head>
 <body>
     <canvas width='1000px' height='1000px' class='canvas'></canvas>
+    <pre id='log'>
+        Log:
+
+    </pre>
 </body>
 <script>ignite()</script>
 </html>

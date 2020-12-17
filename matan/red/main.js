@@ -18,6 +18,7 @@ function onmove(event) {
         state.points.push([event.offsetX, event.offsetY])
 
         var ctx = state.context;
+        ctx.clearRect(0,0,1000,1000);
         var points = state.points;
         ctx.strokeStyle = 'red';
         ctx.fillStyle='#FAA';
@@ -28,7 +29,7 @@ function onmove(event) {
 
         }
         ctx.closePath()
-        ctx.fill("nonzero");
+        ctx.fill("evenodd");
         ctx.stroke();
     }
 }
