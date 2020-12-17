@@ -1,8 +1,6 @@
 var R1 = 40;
 var R2 = 80;
-var dr = 1;
-var dg = 1;
-var db = 1;
+var on = false;
 function mirrored_clamp(v,dv) {
     v = v + dv;
     if (v < 0) {
@@ -70,27 +68,45 @@ function add_circle_if_on() {
     }
     window.setTimeout(add_circle_if_on, R1)
 }
-var on = false;
 function turn_on(event) {
     on = true;
     position = [event.offsetX, event.offsetY]
     add_circle(event.offsetX, event.offsetY)
 }
-
+function ontouch(event) {
+  event.stopPropagation();
+  event.preventDefault();
+  var touches = event.changedTouches;
+  for (var i = 0; i < touches.length; i++) {
+    position = [touches[i].clientX, touches[i].clientY]
+    add_circle(touches[i].clientX, touches[i].clientY)
+  }
+}
 function turn_off() {
     on = false;
 }
+function resize() {
+  $('.canvas').attr('width', window.innerWidth);
+  $('.canvas').attr('height', window.innerHeight);
+  var canvas_element = $('.canvas')[0]
+  var ctx = canvas_element.getContext('2d');
+  ctx.fillStyle = '#F00';
+  ctx.fillRect(0,0,window.innerWidth,window.innerHeight);
 
+}
 function ignite() {
     var canvas_element = $('.canvas')[0]
     var ctx = canvas_element.getContext('2d');
-    ctx.fillStyle = '#F00';
-    ctx.fillRect(0,0,1000,1000);
     console.log(canvas_element)
     canvas_element.addEventListener('mousedown', turn_on)
     canvas_element.addEventListener('mouseup', turn_off)
     canvas_element.addEventListener('mouseleave', turn_off)
     canvas_element.addEventListener('mouseoiut', turn_off)
     canvas_element.addEventListener('mousemove', onmove)
-    add_circle_if_on()
+    $('.canvas').on("touchstart", ontouch);
+    $('.canvas').on("touchmove", ontouch);
+    add_circle_if_on();
+    window.addEventListener('resize', resize);
+
+    resize();
 }
