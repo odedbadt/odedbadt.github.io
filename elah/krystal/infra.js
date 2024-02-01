@@ -340,13 +340,25 @@ function init_and_draw(gl, model, width, height, texture) {
   texture_context.lineWidth = 5;
   texture_context.fillStyle = "black";
   texture_context.fillRect(0,0,400,400);
-  texture_context.fillStyle = "#aaa";
+  texture_context.fillStyle = "white";
   texture_context.beginPath();
   texture_context.moveTo(400,0);
   texture_context.lineTo(0, 400);
   texture_context.lineTo(400, 400);
   texture_context.closePath();
   texture_context.fill();      
+  texture_context.strokeStyle = "white";
+  texture_context.lineWidth = 2;
+  texture_context.beginPath();
+  texture_context.arc(10,10,5,0,Math.PI*2)
+  texture_context.stroke();
+  texture_context.beginPath();
+  texture_context.arc(380,10,5,0,Math.PI*2)
+  texture_context.stroke();  
+  texture_context.beginPath();
+  texture_context.arc(10,380,5,0,Math.PI*2)
+  texture_context.stroke();  
+
 
   texture_context.beginPath();
   texture_context.strokeStyle = "white";
