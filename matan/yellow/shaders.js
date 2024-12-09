@@ -1,36 +1,12 @@
-<html>
-    <head>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/101/three.js"></script>
-        <script type="module" src="yellow.js"></script>
-    </head>
-    <body>
-        <div id="container"></div>
-        <script id="vertexShader" type="x-shader/x-vertex">
-            void main() {
-                gl_Position = vec4( position, 1.0 );
-            }
-        </script>
-        <style type="text/css">
-            canvas {
-                cursor: none;
-            }
-            #container {
-                cursor: none;
-            }
-    </style>
-        <script id="fragmentShader" type="x-shader/x-fragment">
-    
-    // Author:
-    // Title:
-    
+    export const FRAGMENT_SHADER = `
     #ifdef GL_ES
     precision mediump float;
     #endif
-    
+
     uniform vec2 u_resolution;
     uniform vec2 u_mouse;
     uniform float u_time;
-    
+
     const int MAX_ITERACTIONS = 1000;
     const float SQUARED_BAILOUT = 4.0;
     vec2 square(vec2 v) {
@@ -45,14 +21,14 @@
         int C = MAX_ITERACTIONS;
         vec2 A = S;
         for (int i = 0; i < MAX_ITERACTIONS; i++) {
-          if (norm2(A) > SQUARED_BAILOUT) {
+        if (norm2(A) > SQUARED_BAILOUT) {
             break;
-          }
-          A = square(A) + P;
-          C = C - 1;
+        }
+        A = square(A) + P;
+        C = C - 1;
         }
         return pow(float(C) / float(MAX_ITERACTIONS), 15.0);
-    
+
     }
     void main( void ) {
         vec2 coord = 4.0 * (( gl_FragCoord.xy / u_resolution.y ) -0.5);
@@ -89,7 +65,9 @@
         }
         gl_FragData[0] = vec4(R, G, B, 1.0);
     }
-        </script>
-    </body>
-    
-</html>
+    `
+export const VERTEX_SHADER = `
+void main() {
+    gl_Position = vec4( position, 1.0 );
+}
+`
