@@ -30,10 +30,11 @@ float loop(vec2 S, vec2 P) {
 
 }
 void main( void ) {
-    vec2 coord = 4.0*((gl_FragCoord.xy / u_resolution) - 0.5);
+    float zoom = 0.5*min(u_resolution.x, u_resolution.y);
+    vec2 coord = (gl_FragCoord.xy - u_resolution.xy/2.0)/zoom;
     float M = loop(vec2(0.0,0.0), vec2(coord.x, coord.y));
     float R = M;
-    float G = M;
+    float G = 0.0;
     float B = 0.0;
     gl_FragData[0] = vec4(R, G, B, 1.0);
 }

@@ -3,6 +3,7 @@ var canvas;
 var camera, scene, renderer;
 var uniforms;
 
+
 function init() {
     const mandel_canvas = document.getElementById('mandel-canvas' );
     const mandel_context = mandel_canvas.getContext('webgl');
@@ -52,7 +53,6 @@ function init() {
     }
 
     function render() {
-        uniforms.u_time.value += 0.05;
         renderer.render( scene, camera );
     }
     function animate() {
