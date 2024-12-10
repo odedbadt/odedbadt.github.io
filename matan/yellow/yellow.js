@@ -1,4 +1,4 @@
-import { FRAGMENT_SHADER, VERTEX_SHADER } from "./shaders.js";
+import { MANDEL_FRAGMENT_SHADER, JULIA_FRAGMENT_SHADER, VERTEX_SHADER } from "./shaders.js";
 var container;
 var camera, scene, renderer;
 var uniforms;
@@ -22,7 +22,7 @@ function init() {
     var material = new THREE.ShaderMaterial( {
         uniforms: uniforms,
         vertexShader: VERTEX_SHADER,      //document.getElementById( 'vertexShader' ).textContent,
-        fragmentShader: FRAGMENT_SHADER   //document.getElementById( 'fragmentShader' ).textContent
+        fragmentShader: MANDEL_FRAGMENT_SHADER   //document.getElementById( 'fragmentShader' ).textContent
     } );
 
     var mesh = new THREE.Mesh( geometry, material );
@@ -34,11 +34,10 @@ function init() {
     mandel_container.appendChild( renderer.domElement );
 
     function onWindowResize( event ) {
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        const min_x_y = Math.min(renderer.domElement.width,
-            renderer.domElement.height)
-        uniforms.u_resolution.value.x = min_x_y;
-        uniforms.u_resolution.value.y = min_x_y;
+        renderer.setSize( mandel_container.clientWidth, mandel_container.clientHeight );
+        console.log(renderer.domElement.clientHeight)
+        uniforms.u_resolution.value.x = renderer.domElement.width;
+        uniforms.u_resolution.value.y = renderer.domElement.height;
     }
     onWindowResize();
     
