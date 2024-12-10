@@ -3,9 +3,9 @@ import { MANDEL_FRAGMENT_SHADER, JULIA_FRAGMENT_SHADER, VERTEX_SHADER } from "./
 
 function init() {
     const mandel_canvas = document.getElementById('mandel-canvas' );
-    const mandel_context = mandel_canvas.getContext('webgl');
+    const mandel_context = mandel_canvas.getContext('webgl2');
     const julia_canvas = document.getElementById('julia-canvas' );
-    const julia_context = julia_canvas.getContext('webgl');
+    const julia_context = julia_canvas.getContext('webgl2');
     const camera = new THREE.Camera();
     camera.position.z = 1;
 
@@ -26,12 +26,12 @@ function init() {
         u_julia_param: { type: "v2", value: new THREE.Vector2(0.3,0.6) },
         u_zoom: { type: "f", value: 1.0 },
     };
-    const mandel_material = new THREE.ShaderMaterial( {
+    const mandel_material = new THREE.RawShaderMaterial( {
         uniforms: mandel_uniforms,
         vertexShader: VERTEX_SHADER,      //document.getElementById( 'vertexShader' ).textContent,
         fragmentShader: MANDEL_FRAGMENT_SHADER   //document.getElementById( 'fragmentShader' ).textContent
     } );
-    const julia_material = new THREE.ShaderMaterial( {
+    const julia_material = new THREE.RawShaderMaterial( {
         uniforms: julia_uniforms,
         vertexShader: VERTEX_SHADER,      //document.getElementById( 'vertexShader' ).textContent,
         fragmentShader: JULIA_FRAGMENT_SHADER   //document.getElementById( 'fragmentShader' ).textContent
@@ -83,7 +83,6 @@ function init() {
     mandel_canvas.onmousemove = function(e){
       julia_uniforms.u_julia_param.value.x = (e.offsetX - julia_renderer.domElement.width/2) / mandel_uniforms.u_zoom.value;
       julia_uniforms.u_julia_param.value.y = (e.offsetY - julia_renderer.domElement.height/2) / mandel_uniforms.u_zoom.value;
-      console.log(e.offsetX,e.offsetY, julia_uniforms.u_julia_param);
     }
 
     animate()

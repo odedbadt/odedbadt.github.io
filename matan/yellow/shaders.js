@@ -1,11 +1,9 @@
-export const MANDEL_FRAGMENT_SHADER = `
-#ifdef GL_ES
-precision mediump float;
-#endif
+export const MANDEL_FRAGMENT_SHADER = `#version 300 es
+precision highp float;
 
 uniform vec2 u_resolution;
 uniform float u_zoom;
-
+out vec4 fragColor;
 const int MAX_ITERACTIONS = 1000;
 const float SQUARED_BAILOUT = 4.0;
 vec2 square(vec2 v) {
@@ -38,18 +36,16 @@ void main( void ) {
     float G = M;
     float B = 0.0;
 
-    gl_FragData[0] = vec4(R, G, B, 1.0);
+    fragColor = vec4(R, G, B, 1.0);
 }
 `
-export const JULIA_FRAGMENT_SHADER = `
-#ifdef GL_ES
-precision mediump float;
-#endif
+export const JULIA_FRAGMENT_SHADER = `#version 300 es
+precision highp float;
 
 uniform vec2 u_resolution;
 uniform vec2 u_julia_param;
 uniform float u_zoom;
-
+out vec4 fragColor;
 
 const int MAX_ITERACTIONS = 1000;
 const float SQUARED_BAILOUT = 4.0;
@@ -83,10 +79,14 @@ void main( void ) {
     float R = J;
     float G = J;
     float B = 0.0;
-    gl_FragData[0] = vec4(R, G, B, 1.0);
+    fragColor = vec4(R, G, B, 1.0);
 }
 `
-export const VERTEX_SHADER = `
+export const VERTEX_SHADER = `#version 300 es
+precision highp float;
+
+// Vertex attributes
+in vec3 position;
 void main() {
     gl_Position = vec4( position, 1.0 );
 }
