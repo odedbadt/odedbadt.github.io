@@ -1,11 +1,11 @@
 import { MANDEL_FRAGMENT_SHADER, JULIA_FRAGMENT_SHADER, VERTEX_SHADER } from "./shaders.js";
-var container;
+var canvas;
 var camera, scene, renderer;
 var uniforms;
 
 function init() {
-    const mandel_container = document.getElementById('mandel-container' );
-
+    const mandel_canvas = document.getElementById('mandel-canvas' );
+    const mandel_context = mandel_canvas.getContext('webgl');
     camera = new THREE.Camera();
     camera.position.z = 1;
 
@@ -28,13 +28,16 @@ function init() {
     var mesh = new THREE.Mesh( geometry, material );
     scene.add( mesh );
 
-    renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({
+        canvas: mandel_canvas,
+        context: mandel_context
+    })
     renderer.setPixelRatio( window.devicePixelRatio );
 
-    mandel_container.appendChild( renderer.domElement );
+    //mandel_canvas.appendChild( renderer.domElement );
 
     function onWindowResize( event ) {
-        renderer.setSize( mandel_container.clientWidth, mandel_container.clientHeight );
+        renderer.setSize( mandel_canvas.clientWidth, mandel_canvas.clientHeight );
         console.log(renderer.domElement.clientHeight)
         uniforms.u_resolution.value.x = renderer.domElement.width;
         uniforms.u_resolution.value.y = renderer.domElement.height;
@@ -43,7 +46,7 @@ function init() {
     
     window.addEventListener( 'resize', onWindowResize, false );
 
-    mandel_container.onmousemove = function(e){
+    mandel_canvas.onmousemove = function(e){
       uniforms.u_mouse.value.x = e.clientX;
       uniforms.u_mouse.value.y = e.clientY;
     }
