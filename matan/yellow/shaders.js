@@ -35,7 +35,7 @@ void main( void ) {
     coord.x = coord.x -0.2;
     float M = loop(vec2(0.0,0.0), vec2(coord.x, coord.y));
     float R = M;
-    float G = 0.0;
+    float G = M;
     float B = 0.0;
 
     gl_FragData[0] = vec4(R, G, B, 1.0);
