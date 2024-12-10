@@ -17,7 +17,7 @@ function init() {
     const mandel_uniforms = {
         u_time: { type: "f", value: 1.0 },
         u_resolution: { type: "v2", value: new THREE.Vector2() },
-        u_mouse: { type: "v2", value: new THREE.Vector2() },
+        u_mouse_coord: { type: "v2", value: new THREE.Vector2() },
         u_zoom: { type: "f", value: 1.0 },
     };
     const julia_uniforms = {
@@ -83,6 +83,8 @@ function init() {
     mandel_canvas.onmousemove = function(e){
       julia_uniforms.u_julia_param.value.x = (e.offsetX - julia_renderer.domElement.width/2) / mandel_uniforms.u_zoom.value;
       julia_uniforms.u_julia_param.value.y = (e.offsetY - julia_renderer.domElement.height/2) / mandel_uniforms.u_zoom.value;
+      mandel_uniforms.u_mouse_coord.value.x = e.offsetX*window.devicePixelRatio;
+      mandel_uniforms.u_mouse_coord.value.y = e.offsetY*window.devicePixelRatio;
     }
 
     animate()

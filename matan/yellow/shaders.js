@@ -3,6 +3,8 @@ precision highp float;
 
 uniform vec2 u_resolution;
 uniform float u_zoom;
+uniform vec2 u_mouse_coord;
+
 out vec4 fragColor;
 const int MAX_ITERACTIONS = 1000;
 const float SQUARED_BAILOUT = 4.0;
@@ -35,6 +37,18 @@ void main( void ) {
     float R = M;
     float G = M;
     float B = 0.0;
+    float screen_y = u_resolution.y- gl_FragCoord.y;
+    if (
+        (abs(u_mouse_coord.x - gl_FragCoord.x) < 1.0 || 
+         abs(screen_y - u_mouse_coord.y) < 1.0)  &&
+            (abs(u_mouse_coord.x - gl_FragCoord.x) + 
+            abs(screen_y - u_mouse_coord.y) < 40.0))
+             {
+        R = 1.0;
+        G = 0.0;
+        B = 0.0;
+
+    }
 
     fragColor = vec4(R, G, B, 1.0);
 }

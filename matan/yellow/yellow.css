@@ -2,15 +2,15 @@
     display: grid;
     grid-template-columns: 50vw 50vw;
     grid-template-rows: 100vh;
+    cursor: none;
 }
 
 #mandel-canvas {
     width: 50vw;
     height: 100vh;
-    cursor: crosshair;
+/*    cursor: crosshair;*/
 }
 #julia-canvas {
     width: 50vw;
     height: 100vh;
-    cursor: none;
 }
