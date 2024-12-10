@@ -1,13 +1,16 @@
 #main-container {
     display: grid;
     grid-template-columns: 50vw 50vw;
-    grid-template-rows: 100vw;
-    /*cursor: none;*/
+    grid-template-rows: 100vh;
 }
-/*
-#mandel-container {
+
+#mandel-canvas {
+    width: 50vw;
+    height: 100vh;
+    cursor: crosshair;
+}
+#julia-canvas {
+    width: 50vw;
+    height: 100vh;
     cursor: none;
 }
-#julia-container {
-    cursor: none;
-}*/

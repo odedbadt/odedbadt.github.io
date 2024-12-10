@@ -4,7 +4,7 @@ precision mediump float;
 #endif
 
 uniform vec2 u_resolution;
-uniform float u_time;
+uniform float u_zoom;
 
 const int MAX_ITERACTIONS = 1000;
 const float SQUARED_BAILOUT = 4.0;
@@ -30,12 +30,14 @@ float loop(vec2 S, vec2 P) {
 
 }
 void main( void ) {
-    float zoom = 0.5*min(u_resolution.x, u_resolution.y);
-    vec2 coord = (gl_FragCoord.xy - u_resolution.xy/2.0)/zoom;
+    float zoom = 0.4*min(u_resolution.x, u_resolution.y);
+    vec2 coord = (gl_FragCoord.xy - u_resolution.xy/2.0) / u_zoom;
+    coord.x = coord.x -0.2;
     float M = loop(vec2(0.0,0.0), vec2(coord.x, coord.y));
     float R = M;
     float G = 0.0;
     float B = 0.0;
+
     gl_FragData[0] = vec4(R, G, B, 1.0);
 }
 `
@@ -45,8 +47,9 @@ precision mediump float;
 #endif
 
 uniform vec2 u_resolution;
-uniform vec2 u_mouse;
-uniform float u_time;
+uniform vec2 u_julia_param;
+uniform float u_zoom;
+
 
 const int MAX_ITERACTIONS = 1000;
 const float SQUARED_BAILOUT = 4.0;
@@ -72,38 +75,14 @@ float loop(vec2 S, vec2 P) {
 
 }
 void main( void ) {
-    vec2 coord = 4.0 * (( gl_FragCoord.xy / u_resolution.y ) -0.5);
-    vec2 mouse = 4.0 * (( u_mouse.xy / u_resolution.y ) - 0.5);
-    mouse.y = -mouse.y;
-    vec2 offset = vec2(3.85,0.0);
-    vec2 coord_p = coord + offset;
-    vec2 mouse_p = mouse + offset;
-    vec2 coord_m = coord - offset;
-    vec2 mouse_m = mouse - offset;
+    float zoom = 0.4*min(u_resolution.x, u_resolution.y);
+    vec2 coord = (gl_FragCoord.xy - u_resolution.xy/2.0) / u_zoom;
+
     vec2 origin = vec2(0.0, 0.0);
-    float J = loop(coord, mouse_m);
-    float M = loop(origin, coord_m);
-    float V = min(M, J);
-    float R = V;
-    float G = V;
+    float J = loop(coord, u_julia_param);
+    float R = J;
+    float G = J;
     float B = 0.0;
-    //float alpha = 1.0;
-    if (abs(mouse.x - coord.x) <= 0.004) {
-        G = 0.0;
-        R = 1.0;
-    }
-    if (abs(mouse.y - coord.y) <= 0.004) {
-        G = 0.0;
-        R = 1.0;
-    }
-    if ((abs(coord_m.x) <= 0.004) && (abs(coord_m.y) < 0.2)) {
-        G = 1.0;
-        R = 0.0;
-    }
-    if ((abs(coord_m.y) <= 0.004) && (abs(coord_m.x) < 0.2)) {
-        G = 1.0;
-        R = 0.0;
-    }
     gl_FragData[0] = vec4(R, G, B, 1.0);
 }
 `
