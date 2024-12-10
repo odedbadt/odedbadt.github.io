@@ -65,13 +65,13 @@ function init() {
         julia_renderer.setSize( julia_canvas.clientWidth, julia_canvas.clientHeight );
         mandel_uniforms.u_resolution.value.x = mandel_renderer.domElement.width;
         mandel_uniforms.u_resolution.value.y = mandel_renderer.domElement.height;
-        mandel_uniforms.u_zoom.value = 0.4 * Math.min(
+        mandel_uniforms.u_zoom.value = 0.2 * Math.min(
             mandel_renderer.domElement.width, 
             mandel_renderer.domElement.height);
 
         julia_uniforms.u_resolution.value.x = julia_renderer.domElement.width;
         julia_uniforms.u_resolution.value.y = julia_renderer.domElement.height;
-        julia_uniforms.u_zoom.value = 0.4*Math.min(
+        julia_uniforms.u_zoom.value = 0.2 * Math.min(
             julia_renderer.domElement.width, 
             julia_renderer.domElement.height);
         render();
@@ -81,8 +81,9 @@ function init() {
     window.addEventListener( 'resize', onWindowResize, false );
 
     mandel_canvas.onmousemove = function(e){
-      julia_uniforms.u_julia_param.value.x = (e.offsetX - julia_renderer.domElement.width/2) / mandel_uniforms.u_zoom.value;
-      julia_uniforms.u_julia_param.value.y = (e.offsetY - julia_renderer.domElement.height/2) / mandel_uniforms.u_zoom.value;
+        console.log(e.offsetX,mandel_renderer.domElement.width/2)
+      julia_uniforms.u_julia_param.value.x = (e.offsetX*window.devicePixelRatio - mandel_renderer.domElement.width/2) / mandel_uniforms.u_zoom.value;
+      julia_uniforms.u_julia_param.value.y = (e.offsetY*window.devicePixelRatio - mandel_renderer.domElement.height/2) / mandel_uniforms.u_zoom.value;
       mandel_uniforms.u_mouse_coord.value.x = e.offsetX*window.devicePixelRatio;
       mandel_uniforms.u_mouse_coord.value.y = e.offsetY*window.devicePixelRatio;
     }
