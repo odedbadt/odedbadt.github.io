@@ -8,9 +8,16 @@
 #mandel-canvas {
     width: 50vw;
     height: 100vh;
-/*    cursor: crosshair;*/
 }
 #julia-canvas {
     width: 50vw;
     height: 100vh;
+}
+#julia-param {
+    position: absolute;
+    opacity: 0.5;
+    top:10.0;
+    left:10.0;    
+    font-family: monospace;
+    color: #333;
 }

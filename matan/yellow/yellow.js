@@ -83,9 +83,11 @@ function init() {
     mandel_canvas.onmousemove = function(e){
         console.log(e.offsetX,mandel_renderer.domElement.width/2)
       julia_uniforms.u_julia_param.value.x = (e.offsetX*window.devicePixelRatio - mandel_renderer.domElement.width/2) / mandel_uniforms.u_zoom.value;
-      julia_uniforms.u_julia_param.value.y = (e.offsetY*window.devicePixelRatio - mandel_renderer.domElement.height/2) / mandel_uniforms.u_zoom.value;
+      julia_uniforms.u_julia_param.value.y = -(e.offsetY*window.devicePixelRatio - mandel_renderer.domElement.height/2) / mandel_uniforms.u_zoom.value;
       mandel_uniforms.u_mouse_coord.value.x = e.offsetX*window.devicePixelRatio;
       mandel_uniforms.u_mouse_coord.value.y = e.offsetY*window.devicePixelRatio;
+      document.getElementById('julia-param').innerHTML = 
+      `Julia param: ${julia_uniforms.u_julia_param.value.x.toFixed(2)}, ${julia_uniforms.u_julia_param.value.y.toFixed(2)}`
     }
 
     animate()

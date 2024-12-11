@@ -32,12 +32,19 @@ float loop(vec2 S, vec2 P) {
 void main( void ) {
     float zoom = 0.4*min(u_resolution.x, u_resolution.y);
     vec2 coord = (gl_FragCoord.xy - u_resolution.xy/2.0) / u_zoom;
-    coord.x = coord.x -0.2;
+    coord.x = coord.x;
     float M = loop(vec2(0.0,0.0), vec2(coord.x, coord.y));
     float R = M;
     float G = M;
     float B = 0.0;
     float screen_y = u_resolution.y- gl_FragCoord.y;
+
+    if ((abs(coord.x) < 1.0/u_zoom) || (abs(coord.y) < 1.0/u_zoom)) {
+        R = 0.0;
+        G = 0.0;
+        B = 1.0;
+
+    }
     if (
         (abs(u_mouse_coord.x - gl_FragCoord.x) < 1.0 || 
          abs(screen_y - u_mouse_coord.y) < 1.0)  &&
@@ -49,7 +56,6 @@ void main( void ) {
         B = 0.0;
 
     }
-
     fragColor = vec4(R, G, B, 1.0);
 }
 `
