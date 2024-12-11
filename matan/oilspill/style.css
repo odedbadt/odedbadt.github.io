@@ -1,0 +1,7 @@
+#main-canvas {
+    position: absolute;
+    cursor: crosshair;
+    z-index: 0;
+    width: 100vw;
+    height: 100vh;
+}

@@ -1,8 +1,8 @@
-const R1 = 30;
+const R1 = 60;
 const R2 = 80;
 const canvas_element = document.getElementById('main-canvas');
 const context = canvas_element.getContext('2d', { willReadFrequently: true });
-const dpr = 1;//window.devicePixelRatio || 1;
+const dpr = window.devicePixelRatio || 1;
 
 let on = false;
 function hsvToRgb(h, s, v) {
@@ -18,13 +18,6 @@ function rgbToHsv(r, g, b) {
     return [60 * (h < 0 ? h + 6 : h), v && n / v, v];
 }
 
-function log(s) {
-    return
-    $('#log').text($('#log').text() + '\n' + s);
-    if ($('#log').text().length > 100) {
-        $('#log').text($('#log').text().slice($('#log').text().length - 100));
-    }
-}
 // function progress_pixel(data, offset) {
 //     data[offset] = 0;
 //     data[offset + 1] = 0;
@@ -93,7 +86,7 @@ function add_circle(cx, cy) {
             pixel_data.data[base_offset + 3] = 255;
         }
     }
-    context.putImageData(pixel_data, cx - R1, cy - R1);
+    context.putImageData(pixel_data, cx - R1*dpr, cy - R1*dpr);
 }
 function add_random_circle(x, y) {
     const alpha = Math.random() * 2 * Math.PI;
@@ -103,7 +96,7 @@ function add_random_circle(x, y) {
     add_circle(cx, cy);
 }
 function onmove(event) {
-    position = [event.offsetX, event.offsetY]
+    position = [event.offsetX*dpr, event.offsetY*dpr]
     //add_circle_if_on()
 }
 function turn_on(event) {
@@ -127,11 +120,11 @@ function turn_off() {
 function resize() {
     const dpr = window.devicePixelRatio || 1;
     const rect = canvas_element.getBoundingClientRect();
+    console.log(rect, rect.width * dpr);
     canvas_element.width = rect.width * dpr;
     canvas_element.height = rect.height * dpr;
-    let ctx = canvas_element.getContext('2d');
-    ctx.fillStyle = '#A73';
-    ctx.fillRect(0, 0, canvas_element.width,canvas_element.height);
+    context.fillStyle = '#A73';
+    context.fillRect(0, 0, canvas_element.width,canvas_element.height);
 }
 function main_loop() {
     if (on) {
