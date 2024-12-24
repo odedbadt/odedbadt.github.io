@@ -12,7 +12,7 @@ export class App {
     this.cache = localStorage;
   }
   construct_url_for_name(model_name) {
-    return `/static/models/${model_name}.json`
+    return `static/models/${model_name}.json`
   }
   warmup_cache(model_names) {
     const _this = this;
@@ -86,7 +86,7 @@ load_model_names(callback) {
     callback(this.cache.getItem(cache_key));
     return
   }
-  fetch(`/static/models/models.txt#'${Date.now()}`)
+  fetch(`static/models/models.txt#'${Date.now()}`)
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
