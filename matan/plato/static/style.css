@@ -1,0 +1,94 @@
+/**
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ body {
+  display: grid;
+  grid-template-columns: 30vw 30vw 30vw;
+  grid-template-rows: 40vw 40vw;
+   background-color: black;
+  font-family: monospace;
+ }
+ canvas {
+  cursor: crosshair;
+ }
+ #textureCanvas {
+   width: 30vw;
+   height: 30vw;
+   background-color: black;
+
+ }
+ button#clear-cache {
+  font-family: monospace;
+  margin: 0.5em;
+ }
+ #mainCanvas {
+    width: 30vw;
+    height: 30vw;
+}
+ #penCanvas {
+   width: 30vw;
+   height: 30vw;
+}
+ #controls {
+  display:grid;
+grid-template-rows: 3em 16em calc(40vw - 16em);
+ }
+ #rendering-options {
+  height: 16em;
+  
+ }
+ #model-select {
+  height: 3em;
+ }
+ fieldset {
+  border: none;
+
+ }
+ #rendering-options label, legend h3{
+  height: 2em;
+  flex: 0 0 auto;
+  color: grey;
+
+ }
+
+ legend {
+  color: grey;
+  height: 2em;
+  flex: 0 0 auto;
+  font-size: large;
+  padding: 1em 0 0 0;
+
+ }
+ #rendering-options checkbox {
+  height: 2em;
+  flex: 0 0 auto;
+  color: grey;
+
+ }
+ #canvas-controls {
+  display:grid;
+  grid-template-columns: 20vw 10vw;
+
+ }
+ #paletteCanvas {
+  width: 20vw;
+  height: calc(40vw - 14em);
+  background-color: orange;
+
+ }
+#penCanvas {
+  width: 10vw;
+  height: calc(40vw - 14em);
+}
