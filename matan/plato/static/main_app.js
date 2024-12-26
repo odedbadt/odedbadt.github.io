@@ -57,8 +57,9 @@ init() {
     clear_btn.addEventListener('click', () => window.main_app.clear());
     const cache_clear_btn = document.getElementById('clear-cache');
     cache_clear_btn.addEventListener('click', () => localStorage.clear());
-
-    //clear-cache
+    for (const id of ['model', 'all-mirrors', 'no-mirrors', 'generating-mirrors']) {
+      document.getElementById(id).addEventListener('change', this.draw_model.bind(this))
+    }
   })
 }
 load_model(model_url, callback) {
@@ -200,7 +201,7 @@ init_palette() {
   const palette_canvas = document.getElementById("paletteCanvas");
   const palette_context = palette_canvas.getContext('2d');
   var img = new Image();
-  img.src = "/static/palette.png"; // Replace with the path to your image
+  img.src = "static/palette.png"; // Replace with the path to your image
   const dpr = this.dpr;
   img.onload = () => {
     palette_context.drawImage(img, 0, 0, 25, 200, 0, 0,
