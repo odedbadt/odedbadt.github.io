@@ -98,7 +98,6 @@ out vec4 fragColor;
 uniform sampler2D uTexture;
 
 void main(void) {
-  fragColor = vec4(vec3(0.5,0.9,1.0),0.6);
-  fragColor[3] = 0.2;
+  fragColor = vec4(vec3(0.5,0.9,1.0)*fBrightness,0.5);
 }
 `
