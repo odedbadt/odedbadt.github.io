@@ -348,7 +348,7 @@ init_texture_sketcher() {
       this.prev_coords = [coords[0], coords[1]];
 
       texture_context.beginPath();
-      texture_context.ellipse(coords[0], coords[1], this.pen_radius, this.pen_radius, 0, 0, Math.PI * 2)
+      //texture_context.ellipse(coords[0], coords[1], this.pen_radius, this.pen_radius, 0, 0, Math.PI * 2)
       texture_context.fill();
       texture_context.stroke();
       texture_context.fillStyle = this.pen_color;
