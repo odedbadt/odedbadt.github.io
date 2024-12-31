@@ -27,34 +27,36 @@
 </head>
 
 <body>
-  <div id="controls">
-    <select name="Models" id="model-select">
-      <option class="select-option" v-for="model_entry in model_entries" :key="model_entry.name" :value="model_entry.name">{{ model_entry.name }}</option>
-    </select>
-    <fieldset id="rendering-options">
-      <legend>Rendering options:</legend>
-      <div>
-        <input type="checkbox" id="model" checked=true name="model" value="model">
-        <label for="model">Model</label>
+  <div id="v-div-0">
+    <div id="h-div-1">
+      <div id="v-div-1">
+        <select name="Models" id="model-select">
+          <option class="select-option" v-for="model_entry in model_entries" :key="model_entry.name" :value="model_entry.name">{{ model_entry.name }}</option>
+        </select>
+        <fieldset id="rendering-options">
+          <legend>Rendering options:</legend>
+          <div>
+            <input type="checkbox" id="model" checked=true name="model" value="model">
+            <label for="model">Model</label>
+          </div>
+          <div>
+            <input type="radio" id="generating-mirrors" name="mirrors" value="generating-mirrors">
+            <label for="generating-mirrors">Generating mirrors only</label>
+          </div>
+          <div>
+            <input type="radio" id="all-mirrors" name="mirrors" value="all-mirrors">
+            <label for="all-mirrors">All mirrors</label>
+          </div>
+          <div>
+            <input type="radio" id="no-mirrors" name="mirrors" value="no-mirrors">
+            <label for="no-mirrors">No mirrors</label>
+          </div>
+          <button id="clear-cache">Clear Cache</button>
+        </fieldset>
       </div>
-      <div>
-        <input type="radio" id="generating-mirrors" name="mirrors" value="generating-mirrors">
-        <label for="generating-mirrors">Generating mirrors only</label>
-      </div>
-      <div>
-        <input type="radio" id="all-mirrors" name="mirrors" value="all-mirrors">
-        <label for="all-mirrors">All mirrors</label>
-      </div>
-      <div>
-        <input type="radio" id="no-mirrors" name="mirrors" value="no-mirrors">
-        <label for="no-mirrors">No mirrors</label>
-      </div>
-      <button id="clear-cache">Clear Cache</button>
-    </fieldset>
-    <div id="canvas-controls">
-      <canvas id="paletteCanvas"></canvas>
       <canvas id="penCanvas"></canvas>
     </div>
+    <canvas id="paletteCanvas"></canvas>
   </div>
   <canvas id="mainCanvas"></canvas>
   <canvas id="textureCanvas"></canvas>

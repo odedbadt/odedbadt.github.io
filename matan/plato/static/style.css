@@ -41,16 +41,30 @@
    width: 30vw;
    height: 30vw;
 }
- #controls {
+#v-div-0 {
+  display: grid;
+  grid-template-rows: 16em calc(40vw - 16em);
+ }
+#v-div-1 {
   display:grid;
-grid-template-rows: 3em 16em calc(40vw - 16em);
+grid-template-rows: 3em 13em;
+height: 16em;
  }
  #rendering-options {
   height: 16em;
   
  }
+ #h-div-1 {
+  display:grid;
+grid-template-columns: 20vw 10vw;
+ }
  #model-select {
   height: 3em;
+  width: 20vw;
+ }
+ #penCanvas {
+   width: 10vw;
+   height: 16em;
  }
  fieldset {
   border: none;
@@ -82,13 +96,10 @@ grid-template-rows: 3em 16em calc(40vw - 16em);
   grid-template-columns: 20vw 10vw;
 
  }
+
  #paletteCanvas {
-  width: 20vw;
-  height: calc(40vw - 14em);
+  width: 30vw;
+  height: calc(40vw - 16em);
   background-color: orange;
 
  }
-#penCanvas {
-  width: 10vw;
-  height: calc(40vw - 14em);
-}

@@ -1,5 +1,31 @@
 import { VS_SOURCE, FS_SOURCE, FS_SOURCE_MIRRORS, FS_SOURCE_NO_TEXTURE } from './glsl.js'
 import * as RenderUtils from './render_utils.js'
+function hsl_to_rgb(hsl) {
+  let r, g, b;
+  const h = hsl[0];
+  const s = hsl[1];
+  const l = hsl[2];
+  if (s === 0) {
+      r = g = b = l; // achromatic
+  } else {
+      const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1 / 6) return p + (q - p) * 6 * t;
+          if (t < 1 / 2) return q;
+          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+          return p;
+      };
+
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1 / 3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1 / 3);
+  }
+
+  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}
 export class App {
   constructor(model, spinning_speed, pen_color, pen_radius) {
     this.model = model;
@@ -8,7 +34,7 @@ export class App {
     this.alpha = 0;
     this.pen_color = pen_color || 'black'
     this.pen_radius = pen_radius || 5
-    this.dpr = window.devicePixelRatio || 1;
+    this.dpr = 1;
     this.cache = localStorage;
   }
   construct_url_for_name(model_name) {
@@ -169,25 +195,33 @@ init_and_draw() {
 };
 init_canvas_sizes() {
   const dpr = this.dpr;
+  const _this = this;
   const set_size = () => {
-    const canvas_elements = document.getElementsByTagName('canvas');
-    for (const canvas_element of canvas_elements) {
-      const rect = canvas_element.getBoundingClientRect();
-      if (canvas_element.id == 'mainCanvas') {
-        canvas_element.width = rect.width * dpr;
-        canvas_element.height = rect.height * dpr;
-        this.draw_model()
-      } else {
-        const canvas_context = canvas_element.getContext('2d', {'willReadFrequently': true});
-        const imageData = canvas_context.getImageData(0, 0, canvas_element.width, canvas_element.height);
-        canvas_element.width = rect.width * dpr;
-        canvas_element.height = rect.height * dpr;
-        canvas_context.putImageData(imageData, 0, 0);
+    _this.init_palette()
+    _this.init_pen_selector()
+    const main_canvas_element = document.getElementById('mainCanvas');
+    const main_rect = main_canvas_element.getBoundingClientRect();
+    main_canvas_element.width = main_rect.width * dpr;
+    main_canvas_element.height = main_rect.height * dpr;
+    this.draw_model()
 
-      }
-    }
+    const texture_canvas_element = document.getElementById('textureCanvas');
+    const texture_rect = texture_canvas_element.getBoundingClientRect();
+    const texture_canvas_context = texture_canvas_element.getContext('2d', {'willReadFrequently': true});
+    const offscreen_canvas_element = document.createElement('canvas');
+    offscreen_canvas_element.width = texture_rect.width * dpr;
+    offscreen_canvas_element.height = texture_rect.height * dpr;
+    const offscreen_context = offscreen_canvas_element.getContext('2d', {'willReadFrequently': true});
+    offscreen_context.drawImage(texture_canvas_element,0,0,
+      offscreen_canvas_element.width,
+      offscreen_canvas_element.height)
+    texture_canvas_element.width = texture_rect.width * dpr;
+    texture_canvas_element.height = texture_rect.height * dpr;
+    texture_canvas_context.drawImage(offscreen_canvas_element,0,0,
+      texture_canvas_element.width,
+      texture_canvas_element.height);
   }
-  set_size()
+  set_size();
   const resize_observer = new ResizeObserver(entries => {
     entries.forEach((_) => { set_size() });
   })
@@ -199,16 +233,46 @@ init_canvas_sizes() {
 }
 init_palette() {
   const palette_canvas = document.getElementById("paletteCanvas");
+  const palette_canvas_rect = palette_canvas.getBoundingClientRect();
+  const width = palette_canvas_rect.width * this.dpr;
+  const height = palette_canvas_rect.height * this.dpr; 
+  palette_canvas.width = width; 
+  palette_canvas.height = height; 
   const palette_context = palette_canvas.getContext('2d');
-  var img = new Image();
-  img.src = "static/palette.png"; // Replace with the path to your image
-  const dpr = this.dpr;
-  img.onload = () => {
-    palette_context.drawImage(img, 0, 0, 25, 200, 0, 0,
-      palette_canvas.width, palette_canvas.height);
+  const image_data = palette_context.getImageData(0,0,palette_canvas.width, palette_canvas.height)
+  const data = image_data.data;
+  for (let y = 0; y < palette_canvas.height; y++) {
+    for (let x = 0; x < palette_canvas.width; x++) {
+      const h = x/palette_canvas.width;
+
+      const s = 1;
+      const l = y/palette_canvas.height;
+      const rgb = hsl_to_rgb([h,s,l]);
+      const base_offset = (y* palette_canvas.width + x)*4;  
+      data[base_offset] = 255;
+      data[base_offset+1] = 0;
+      data[base_offset+2] = 0;      
+      data[base_offset] = rgb[0];
+      data[base_offset+1] = rgb[1];
+      data[base_offset+2] = rgb[2];
+      data[base_offset+3] = 255;
+
+    
+    }
+  
+
+    
   }
+  palette_context.putImageData(image_data,0,0);
+  // var img = new Image();
+  // img.src = "static/palette.png"; // Replace with the path to your image
+  const dpr = this.dpr;
+  // img.onload = () => {
+  //   palette_context.drawImage(img, 0, 0, 25, 200, 0, 0,
+  //     palette_canvas.width, palette_canvas.height);
+  // }
   palette_canvas.onclick = (event) => {
-    const color = palette_context.getImageData(event.offsetX * dpr, event.offsetY * dpr, 1, 1).data;
+    const color = palette_context.getImageData(event.offsetX, event.offsetY, 1, 1).data;
     this.pen_color = `rgb(${color[0]},${color[1]},${color[2]})`;
     this.draw_pen_selector()
   }
@@ -246,16 +310,19 @@ draw_pen_selector() {
   pen_context.globalCompositeOperation = bak_globalCompositeOperation
 }
 init_pen_selector() {
-  this.draw_pen_selector();
   const pen_canvas = document.getElementById("penCanvas");
   const pen_canvas_rect = pen_canvas.getBoundingClientRect();
   const dpr = this.dpr;
+  pen_canvas.width = pen_canvas_rect.width * dpr;
+  pen_canvas.height = pen_canvas_rect.height * dpr;
+  this.draw_pen_selector();
   const slope = pen_canvas_rect.width / 2 / pen_canvas_rect.height;
+  const _this = this;
   pen_canvas.addEventListener("mousemove", (event) => {
     if (event.buttons) {
       const pen_canvas_y = event.offsetY;
       this.pen_radius = pen_canvas_y * slope / 2;
-      this.draw_pen_selector()
+      _this.draw_pen_selector()
     }
   });
 }
@@ -309,54 +376,66 @@ init_texture_sketcher() {
     const mn = [v1[0] - v2[0], v1[1] - v2[1]];
     return mn[0] * mn[0] + mn[1] * mn[1];
   }
+  const _this = this;
+
   texture_canvas.addEventListener("mousedown", (event) => {
-    this.path = new Path2D();
-    this.mirror_path = new Path2D();
-    texture_context.strokeStyle = this.pen_color;
-    texture_context.lineWidth = this.pen_radius * 2;
+    _this.path = new Path2D();
+    _this.mirror_path = new Path2D();
+    texture_context.strokeStyle = _this.pen_color;
+    texture_context.lineWidth = _this.pen_radius * 10;
     const coords = mouse_event_to_coordinates(event);
-    this.prev_coords = [coords[0], coords[1]]
+    _this.prev_coords = [coords[0], coords[1]]
     const mirror_coords = mirror_coordinates(coords);
-    this.path.moveTo(coords[0], coords[1])
-    this.mirror_path.moveTo(mirror_coords[0], mirror_coords[1])
+
+      texture_context.beginPath();
+    texture_context.ellipse(coords[0], coords[1], this.pen_radius, this.pen_radius, 0, 0, Math.PI * 2)
+    texture_context.fill();
+    texture_context.beginPath();
+    texture_context.ellipse(mirror_coords[0], mirror_coords[1], this.pen_radius, this.pen_radius, 0, 0, Math.PI * 2)
+    texture_context.fill();
+
+    _this.path.moveTo(coords[0], coords[1])
+    _this.mirror_path.moveTo(mirror_coords[0], mirror_coords[1])
   })
   texture_canvas.addEventListener("mouseup", (event) => {
-    if (this.path) {
-      texture_context.stroke(this.path);
-      this.path = null;
-      texture_context.stroke(this.mirror_path);
-      this.mirror_path = null;
+    if (_this.path) {
+      texture_context.lineWidth = _this.pen_radius;
+      texture_context.stroke(_this.path);
+      _this.path = null;
+      texture_context.stroke(_this.mirror_path);
+      _this.mirror_path = null;
     }
   })
-
   texture_canvas.addEventListener("mousemove", (event) => {
     const coords = mouse_event_to_coordinates(event);
     const mirror_coords = mirror_coordinates(coords);
     if (event.buttons) {
-      if (this.path && this.mirror_path) {
-        if (dist2(coords, this.prev_coords) * dpr * dpr > 10) {
-          this.path.lineTo(coords[0], coords[1]);
-          this.mirror_path.lineTo(mirror_coords[0], mirror_coords[1]);
-          texture_context.stroke(this.path)
-          texture_context.stroke(this.mirror_path)
+      if (_this.path && _this.mirror_path) {
+        if (dist2(coords, _this.prev_coords) * dpr * dpr > 10) {
+          _this.path.lineTo(coords[0], coords[1]);
+          _this.mirror_path.lineTo(mirror_coords[0], mirror_coords[1]);
+          texture_context.lineWidth = _this.pen_radius;
+          texture_context.lineCap = 'butt';
+          texture_context.lineJoin = 'miter';
+          texture_context.stroke(_this.path)
+          texture_context.stroke(_this.mirror_path)
         } else {
-          this.path.moveTo(coords[0], coords[1]);
-          this.mirror_path.moveTo(mirror_coords[0], mirror_coords[1]);
+          _this.path.moveTo(coords[0], coords[1]);
+          _this.mirror_path.moveTo(mirror_coords[0], mirror_coords[1]);
 
         }
       }
       this.prev_coords = [coords[0], coords[1]];
 
       texture_context.beginPath();
-      //texture_context.ellipse(coords[0], coords[1], this.pen_radius, this.pen_radius, 0, 0, Math.PI * 2)
+      texture_context.ellipse(coords[0], coords[1], this.pen_radius, this.pen_radius, 0, 0, Math.PI * 2)
       texture_context.fill();
-      texture_context.stroke();
       texture_context.fillStyle = this.pen_color;
       texture_context.lineWidth = 0;
       texture_context.beginPath();
-
       texture_context.ellipse(mirror_coords[0], mirror_coords[1], this.pen_radius, this.pen_radius, 0, 0, Math.PI * 2)
       texture_context.fill();
+      texture_context.lineWidth = this.pen_radius;
       this.draw_model();
     }
 
