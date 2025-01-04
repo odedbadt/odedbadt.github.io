@@ -1,0 +1,38 @@
+<html>
+
+<head>
+    <title>Museum of polyhedra</title>
+    <link type="text/css" rel="stylesheet" href="static/style.css">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script type="module" src="static/js/bundle.js" defer></script>
+</head>
+
+<body>
+    <div id="h-div-0">
+        <canvas id="sketcher" width="256" height="256"></canvas>
+        <div id="v-div-0">
+
+            <div class="func-view">
+                <div>Real</div>
+                <canvas id="real" width="256" height="256"></canvas>
+
+            </div>
+            <div class="func-view">
+                <div>Imag:</div>
+                <canvas id="imag" width="256" height="256"></canvas>
+            </div>
+            <div class="func-view">
+                <div>Abs:</div>
+                <canvas id="abs" width="256" height="256"></canvas>
+            </div>
+            <div class="func-view">
+                <div>Arg:</div>
+                <canvas id="arg" width="256" height="256"></canvas>
+            </div>
+            <div id="log"></div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -34,7 +34,9 @@ export class App {
     this.alpha = 0;
     this.pen_color = pen_color || 'black'
     this.pen_radius = pen_radius || 5
-    this.dpr = 1;
+    this.dpr = window.devicePixelRatio;
+    this.spinning_speed = 0.035;
+    this.is_spinning = false;
     this.cache = localStorage;
   }
   construct_url_for_name(model_name) {
@@ -84,8 +86,8 @@ export class App {
       const first_model = this.model_names[0];
       this.load_and_set_model(first_model, () => {
 
-        const clear_btn = document.getElementById('clear-button');
-        clear_btn.addEventListener('click', () => window.main_app.clear());
+        const clear_btn = document.getElementById('clear-canvas-button');
+        clear_btn.addEventListener('click', () => _this.clear());
         const cache_clear_btn = document.getElementById('clear-cache');
         cache_clear_btn.addEventListener('click', () => localStorage.clear());
         for (const id of ['model', 'all-mirrors', 'no-mirrors', 'generating-mirrors']) {
@@ -94,20 +96,16 @@ export class App {
         _this.is_dirty = true;
         _this.init_animation_loop();
         _this.spinning_interval = setInterval(() => {
-          if (typeof (_this.spinning_speed) === 'number') {
+          if (_this.is_spinning) {
             _this.alpha = _this.alpha + _this.spinning_speed;
-            if (_this.spinning_speed != 0) {
-              _this.is_dirty = true;
-            }
+            _this.is_dirty = true;
           }
         }, 100);
-        _this.spinning_speed = 0;
       });
-      _this.spinning_speed = 0;
       const main_canvas = document.getElementById("mainCanvas");
 
       main_canvas.addEventListener("click", (event) => {
-        _this.spinning_speed = 0.035 - _this.spinning_speed;
+        _this.is_spinning = !_this.is_spinning;
       })
     
 
@@ -176,7 +174,7 @@ export class App {
     if (this.spinner_model) {
       this.set_model(this.spinner_model);
     }
-    this.set_spinning_speed(.35);
+    this.set_spinning_speed(.035);
     const _this = this
     this.load_model(this.construct_url_for_name(model_name),
       (model) => {
@@ -207,7 +205,7 @@ export class App {
     this.is_dirty = true
     const _this = this;
     main_canvas.addEventListener("click", (event) => {
-      _this.spinning_speed = 0.35 - _this.spinning_speed;
+      _this.is_spinning = !_this.is_spinning
     })
   };
   init_canvas_sizes() {
@@ -255,7 +253,7 @@ export class App {
     const height = palette_canvas_rect.height * this.dpr;
     palette_canvas.width = width;
     palette_canvas.height = height;
-    const palette_context = palette_canvas.getContext('2d');
+    const palette_context = palette_canvas.getContext('2d', { 'willReadFrequently': true });
     const image_data = palette_context.getImageData(0, 0, palette_canvas.width, palette_canvas.height)
     const data = image_data.data;
     for (let y = 0; y < palette_canvas.height; y++) {
@@ -398,18 +396,20 @@ export class App {
     texture_canvas.addEventListener("mousedown", (event) => {
       _this.path = new Path2D();
       _this.mirror_path = new Path2D();
-      texture_context.strokeStyle = _this.pen_color;
-      texture_context.lineWidth = _this.pen_radius * 10;
+      texture_context.strokeStyle = 'black'
+      texture_context.fillStyle = _this.pen_color;
+      texture_context.lineWidth = 1;
       const coords = mouse_event_to_coordinates(event);
       _this.prev_coords = [coords[0], coords[1]]
       const mirror_coords = mirror_coordinates(coords);
 
       texture_context.beginPath();
-      texture_context.ellipse(coords[0], coords[1], this.pen_radius, this.pen_radius, 0, 0, Math.PI * 2)
+      //texture_context.ellipse(coords[0], coords[1], this.pen_radius, this.pen_radius, 0, 0, Math.PI * 2)
       texture_context.fill();
       texture_context.beginPath();
-      texture_context.ellipse(mirror_coords[0], mirror_coords[1], this.pen_radius, this.pen_radius, 0, 0, Math.PI * 2)
+      //texture_context.ellipse(mirror_coords[0], mirror_coords[1], this.pen_radius, this.pen_radius, 0, 0, Math.PI * 2)
       texture_context.fill();
+      texture_context.beginPath();
 
       _this.path.moveTo(coords[0], coords[1])
       _this.mirror_path.moveTo(mirror_coords[0], mirror_coords[1])
@@ -417,8 +417,10 @@ export class App {
     texture_canvas.addEventListener("mouseup", (event) => {
       if (_this.path) {
         texture_context.lineWidth = _this.pen_radius;
+        texture_context.beginPath();
         texture_context.stroke(_this.path);
         _this.path = null;
+        texture_context.beginPath();
         texture_context.stroke(_this.mirror_path);
         _this.mirror_path = null;
       }
@@ -431,7 +433,9 @@ export class App {
           if (dist2(coords, _this.prev_coords) * dpr * dpr > 10) {
             _this.path.lineTo(coords[0], coords[1]);
             _this.mirror_path.lineTo(mirror_coords[0], mirror_coords[1]);
-            texture_context.lineWidth = _this.pen_radius;
+            texture_context.strokeStyle = _this.pen_color;
+            texture_context.fillStyle = _this.pen_color;
+            texture_context.lineWidth = _this.pen_radius*2;
             texture_context.lineCap = 'butt';
             texture_context.lineJoin = 'miter';
             texture_context.stroke(_this.path)
@@ -446,12 +450,14 @@ export class App {
 
         texture_context.beginPath();
         texture_context.ellipse(coords[0], coords[1], this.pen_radius, this.pen_radius, 0, 0, Math.PI * 2)
+//        texture_context.ellipse(coords[0], coords[1], 30, 30, 0, 0, Math.PI * 2)
         texture_context.fill();
         texture_context.fillStyle = this.pen_color;
         texture_context.lineWidth = 0;
         texture_context.beginPath();
         texture_context.ellipse(mirror_coords[0], mirror_coords[1], this.pen_radius, this.pen_radius, 0, 0, Math.PI * 2)
         texture_context.fill();
+        texture_context.beginPath();
         texture_context.lineWidth = this.pen_radius;
         this.is_dirty = true;
       }

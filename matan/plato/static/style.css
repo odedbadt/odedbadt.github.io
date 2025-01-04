@@ -1,23 +1,8 @@
-/**
- * Copyright 2021 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
  body {
   display: grid;
   grid-template-columns: 30vw 30vw 30vw;
-  grid-template-rows: 40vw 40vw;
-   background-color: black;
+  grid-template-rows: 80vh;
+  background-color: black;
   font-family: monospace;
  }
  canvas {
@@ -39,11 +24,11 @@
 }
  #penCanvas {
    width: 30vw;
-   height: 30vw;
+   height: 30vh;
 }
 #v-div-0 {
   display: grid;
-  grid-template-rows: 16em calc(40vw - 16em);
+  grid-template-rows: 16em calc(80vh - 16em);
  }
 #v-div-1 {
   display:grid;
@@ -93,13 +78,25 @@ grid-template-columns: 20vw 10vw;
  }
  #canvas-controls {
   display:grid;
-  grid-template-columns: 20vw 10vw;
+  grid-template-columns: 20vh 10vh;
 
  }
 
  #paletteCanvas {
   width: 30vw;
-  height: calc(40vw - 16em);
+  height: calc(80vh - 16em);
   background-color: orange;
 
  }
+ #v-div-2 {
+  display: grid;
+  width: 30vw;
+  height: 80vh;
+
+  grid-template-rows: calc(80vh - 2em) 2em;
+ }
+button#clear-canvas-button {
+  font-family: monospace;
+  height: 2em;
+ }
+ 

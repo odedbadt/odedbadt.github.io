@@ -22,11 +22,12 @@
   <link type="text/css" rel="stylesheet" href="static/style.css">
   <link rel="icon" type="image/x-icon" href="static/favicon.png">
   <script src="static/gl-matrix-min.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+
   <script type="module" src="static/runner.js" defer></script>
 </head>
 
-<body>
+<body> <!--30vw 30vw 30vw-->
   <div id="v-div-0">
     <div id="h-div-1">
       <div id="v-div-1">
@@ -58,10 +59,12 @@
     </div>
     <canvas id="paletteCanvas"></canvas>
   </div>
+  <div id="v-div-2">
+    <canvas id="textureCanvas"></canvas>
+    <button id="clear-canvas-button">Clear canvas</button>
+  </div>
   <canvas id="mainCanvas"></canvas>
-  <canvas id="textureCanvas"></canvas>
   <div id="shape-name" style="display:none"></div>
-  <div id="clear-button" style="display:none"></div>
 </body>
 
 </html>

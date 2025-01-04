@@ -1,0 +1,30 @@
+ body {
+  background-color: black;
+  font-family: monospace;
+  color: white;
+
+ }
+ canvas {
+  cursor: crosshair;
+  background-color: white;
+
+ }
+ #h-div-0 {
+  display:grid;
+  grid-template-columns: 30vw 70vw;
+ }
+ #v-div-0 {
+  display:grid;
+  grid-template-rows: 50vh 40vh 3em;
+  grid-template-columns: 20vw 20vw;
+ }
+ .func-view {
+    display:grid;
+    grid-template-rows: 2em 256px;
+ }
+ #log {
+    color: white;
+    width: 50em;
+
+ }
+ 

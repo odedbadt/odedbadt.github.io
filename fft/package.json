@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "fft.js": "^4.0.4",
+    "mathjs": "^14.0.1",
+    "webpack-cli": "^6.0.1"
+  }
+}
