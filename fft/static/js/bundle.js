@@ -59003,7 +59003,7 @@ class App {
             const complex_value = this.fft_result[v];
 
             document.getElementById('log').innerHTML = 
-            `The value at ${(x-this.w/2)/this.w} is ${(0,mathjs__WEBPACK_IMPORTED_MODULE_1__.format)(complex_value,2)} (abs: ${(0,mathjs__WEBPACK_IMPORTED_MODULE_1__.format)(complex_value.abs(),2)}, arg: ${(0,mathjs__WEBPACK_IMPORTED_MODULE_1__.format)(complex_value.arg(),2)})   `;
+            `The value at ${(x-this.w/2)/this.w} is ${(0,mathjs__WEBPACK_IMPORTED_MODULE_1__.format)(complex_value,2)} = ${(0,mathjs__WEBPACK_IMPORTED_MODULE_1__.format)(complex_value.abs(),2)}exp(${(0,mathjs__WEBPACK_IMPORTED_MODULE_1__.format)(complex_value.arg(),2)}𝑖)`;
         }
         const logger_out = (event) => {
             document.getElementById('log').innerHTML = ''

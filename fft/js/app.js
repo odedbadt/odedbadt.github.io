@@ -143,7 +143,7 @@ class App {
             const complex_value = this.fft_result[v];
 
             document.getElementById('log').innerHTML = 
-            `The value at ${(x-this.w/2)/this.w} is ${format(complex_value,2)} (abs: ${format(complex_value.abs(),2)}, arg: ${format(complex_value.arg(),2)})   `;
+            `The value at ${(x-this.w/2)/this.w} is ${format(complex_value,2)} = ${format(complex_value.abs(),2)}exp(${format(complex_value.arg(),2)}𝑖)`;
         }
         const logger_out = (event) => {
             document.getElementById('log').innerHTML = ''
