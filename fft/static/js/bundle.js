@@ -59001,10 +59001,17 @@ class App {
             document.getElementById('log').innerHTML = 
             `The value at ${(x-this.w/2)/this.w} is ${(0,mathjs__WEBPACK_IMPORTED_MODULE_1__.format)(complex_value,2)} (abs: ${(0,mathjs__WEBPACK_IMPORTED_MODULE_1__.format)(complex_value.abs(),2)}, arg: ${(0,mathjs__WEBPACK_IMPORTED_MODULE_1__.format)(complex_value.arg(),2)})   `;
         }
+        const logger_out = (event) => {
+            document.getElementById('log').innerHTML = ''
+        }
         document.getElementById('real').addEventListener('mousemove', logger);
         document.getElementById('imag').addEventListener('mousemove', logger);
         document.getElementById('abs').addEventListener('mousemove', logger);
         document.getElementById('arg').addEventListener('mousemove', logger);
+        document.getElementById('real').addEventListener('mouseout', logger_out);
+        document.getElementById('imag').addEventListener('mouseout', logger_out);
+        document.getElementById('abs').addEventListener('mouseout', logger_out);
+        document.getElementById('arg').addEventListener('mouseout', logger_out);
 
     }
 

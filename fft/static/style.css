@@ -15,7 +15,7 @@
  }
  #v-div-0 {
   display:grid;
-  grid-template-rows: 50vh 40vh 3em;
+  grid-template-rows: 3em 50vh 40vh 3em;
   grid-template-columns: 20vw 20vw;
  }
  .func-view {
