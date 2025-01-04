@@ -58926,7 +58926,7 @@ class App {
         draw_signal(real_context, this.real_output, real_canvas.height, true , (h*.25));
         draw_signal(imag_context, this.imag_output, imag_canvas.height, true , (h*.25));
         draw_signal(abs_context, this.abs_output, real_canvas.height, true , (h*.25));
-        draw_signal(arg_context, this.arg_output, imag_canvas.height, true , (h*.25));
+        draw_signal(arg_context, this.arg_output, imag_canvas.height, true , (h*1/3.141));
         draw_signal(signal_context, this.signal, signal_canvas.height, false, (h*2));
 
     }
