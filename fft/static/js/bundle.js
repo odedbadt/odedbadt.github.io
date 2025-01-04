@@ -58881,11 +58881,19 @@ class App {
             context.beginPath()
             context.fillRect(0,0,h,h)
             context.fill()
-            context.beginPath()
             const shifting_function = (j) => j < signal.length/2 ? j + signal.length/2 : j - signal.length/2
             const x_transfrmation = shift? shifting_function :(x)=> x
 
             context.moveTo(0, signal[x_transfrmation(0)]*scale+h/2)
+            context.strokeStyle='rgb(150,40,40)';
+            for (let y = Math.floor(-h/scale); y < h/scale; ++y) {
+                context.beginPath()
+                context.moveTo(0,y*scale+h/2)
+                context.lineTo(h,y*scale+h/2)
+                context.stroke();
+            }
+            context.beginPath()
+            context.strokeStyle='grey';
 
             for (let j = 0; j < signal.length; ++j) {
 
@@ -58925,7 +58933,7 @@ class App {
         const h = this.signal.length
         draw_signal(real_context, this.real_output, real_canvas.height, true , (h*.25));
         draw_signal(imag_context, this.imag_output, imag_canvas.height, true , (h*.25));
-        draw_signal(abs_context, this.abs_output, real_canvas.height, true , (h*.25));
+        draw_signal(abs_context, this.abs_output, real_canvas.height, true , (h*.1));
         draw_signal(arg_context, this.arg_output, imag_canvas.height, true , (h*.25/3.11));
         draw_signal(signal_context, this.signal, signal_canvas.height, false, (h*2));
 
@@ -58955,32 +58963,28 @@ class App {
             this._prev_x = x;
             this._prev_y = y;
             const value = -(y - h / 2)/(h*2);
-            this.signal[x] = Math.max(this.signal[x], value)
+            this.signal[x] = value;
         });
         sketcher_canvas.addEventListener('mousemove', (event) => {
             if (1 & event.buttons) {
                 const x = event.offsetX * dpr;
+                const y = event.offsetY * dpr;
                 if (x<0) {
                     return;
-                }                const y = event.offsetY * dpr;
+                }                
                 if (this._prev_x != null) {
-                    // sketcher_context.beginPath()
-                    // sketcher_context.moveTo(this._prev_x,this._prev_y);
-                    // sketcher_context.lineTo(this._prev_x,h);
-                    // sketcher_context.lineTo(x,h);
-                    // sketcher_context.lineTo(x,y);
-                    // sketcher_context.stroke()
-                    // sketcher_context.fill()
                     const sgn = Math.sign(x - this._prev_x)
                     for (let j = 0; j < Math.abs(x - this._prev_x); ++j) {
                         const interpolation_x = this._prev_x+j*sgn;
-                        const value_in_prev_x = this.signal[this._prev_x];
-                        const value = -(y - h / 2)/(h*2);
-                        const ratio = j / Math.abs(x - this._prev_x);
-                        const interpolated_value = value_in_prev_x*ratio + value*(1 - ratio);
-                        const prev_value_in_interpolation_x = this.signal[x+j*sgn]
+
+                         const value = -(y - h / 2)/(h*2);
+                         const prev_value = -(this._prev_y - h / 2)/(h*2);
+                        // const ratio = j / Math.abs(x - this._prev_x);
+                        // const interpolated_value = value_in_prev_x*ratio + value*(1 - ratio);
+                        // const prev_value_in_interpolation_x = this.signal[x+j*sgn]
                             
-                        this.signal[interpolation_x] = interpolated_value
+                        this.signal[interpolation_x] = (value*x + this._prev_x*prev_value)/
+                                        (x + this._prev_x);
 
                     }
                     
