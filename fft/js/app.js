@@ -1,40 +1,40 @@
 import FFT from 'fft.js';
-import { fft,format} from 'mathjs'
+import { fft,format, Complex} from 'mathjs'
 function fft_shift(array) {
     const n = array.length;
-    const halfN = Math.floor(n / 2);
+    const half = Math.floor(n / 2);
 
-    // Create a new array for the result
-    const shifted = new Float64Array(n);
+    // For odd lengths, include the middle element in the right half
+    const left = array.slice(0, half);
+    const right = array.slice(half);
 
-    if (n % 2 === 0) {
-        // For even-length arrays
-        shifted.set(array.subarray(halfN), 0); // Second half to the front
-        shifted.set(array.subarray(0, halfN), halfN); // First half to the back
-    } else {
-        // For odd-length arrays
-        shifted.set(array.subarray(halfN + 1), 0); // Second half excluding the middle to the front
-        shifted.set(array.subarray(0, halfN + 1), n - halfN - 1); // First half + middle to the back
-    }
-
-    return shifted;
+    return right.concat(left);
 }
 
 class App {
-    constructor() {
-        this.dpr = window.devicePixelRatio;
-        this.w = document.getElementById('sketcher').width * this.dpr;
-        this.signal = new Float64Array(this.w)
-        this.mouse_signal = new Float64Array(this.w)
-        this.mouse_signal.fill(null, 0, this.w);
-
+    constructor(n) {
+        this.dpr = 1;// window.devicePixelRatio;
+        this.n = n
+        this.signal = new Float64Array(n)
+        for (let j = 0; j < n; ++j) {
+            this.signal[j]= Math.cos(j/n*Math.PI*20)*Math.exp(-(j-n/2)*(j-n/2)/1000);
+        }
+        this.init()
+    }
+    init_canvas_sizes() {
+        const signal_canvas_element = document.getElementById('sketcher');
+        const signal_rect = signal_canvas_element.getBoundingClientRect();
+        signal_canvas_element.width = signal_rect.width * this.dpr;
+        signal_canvas_element.height = signal_rect.height * this.dpr;        
+        this.h = signal_rect.height * this.dpr;
+        this.w = signal_rect.width * this.dpr;
     }
     init() {
         this.init_function_sketcher()
         this.init_main_loop();
-        this._prev_x = null
-        this._prev_y = null
-    
+        this.init_canvas_sizes();
+        this._prev_idx = null
+        this._prev_y = null    
     }
     fft_shift(x) {
         if (x > this.w/2) {
@@ -45,38 +45,39 @@ class App {
     sym_fft_shift(x) {
         return this.fft_shift(x)
     }
+    sample_a_half(unshifted_signal) {
+        const result = new Array(this.n)
+        for (let j = 0; j < this.n; ++j) {
+            const c1 = unshifted_signal[Math.floor(j/2)] // Complex
+            const c2 = unshifted_signal[Math.ceil(j/2)] // Complex
+            result[j] = new Complex(c1.re+c2.re/2,(c1.im+c2.im)/2)
+        }
+        return result;
+    }
     draw_fft() {
         const draw_signal = (context, signal, h, shift, scale, log) => {
             context.fillStyle="white"
             context.beginPath()
-            context.fillRect(0,0,h,h)
+            context.fillRect(0,0,this.w,this.h)
             context.fill()
-            const x_transfrmation = shift ? this.fft_shift.bind(this) : (x) => x
-            const y_transformation = log ? (y) => -Math.sign(y)*Math.log(Math.abs(y*scale))+h/2 : 
-                (y) => -y*scale+h/2
-            context.moveTo(0, y_transformation(signal[x_transfrmation(0)]))
-            context.strokeStyle='rgb(150,40,40)';
-            for (let y = Math.floor(-h/scale); y < h/scale; ++y) {
-                context.beginPath()
-                context.moveTo(0,y_transformation(y)*scale+h/2)
-                context.lineTo(h,y_transformation(y)*scale+h/2)
-                context.stroke();
-            }
-            context.beginPath()
+            // context.strokeStyle='rgb(150,40,40)';
+            // for (let y = 0; y < this.n/scale; ++y) {
+            //     context.beginPath()
+            //     context.moveTo(0,y_transformation(y)*scale+this.n/2)
+            //     context.lineTo(this.n,y_transformation(y)*scale+this.n/2)
+            //     context.stroke();
+            // }
+            // context.beginPath()
             context.strokeStyle='grey';
 
-            const shifted0 = signal[this.fft_shift(0)]
-            context.moveTo(0, y_transformation(shift  ? shifted0 : signal[0]))
-            for (let j = 0; j < h; j++) {
 
-                const shifted = this.sym_fft_shift(j)
-                const v = y_transformation(signal[shift ? shifted : j]);
-                
-                context.lineTo(j, v)
-
+            context.moveTo(this.signal_index_to_canvas_x(0), this.signal_y_to_canvas_y(signal[0]))
+            for (let j = 0; j < this.n; j++) {
+                const x = this.signal_index_to_canvas_x(j)
+                const y = this.signal_y_to_canvas_y(signal[j])
+                context.lineTo(x, y)
             }
             context.stroke()
-            context.fillStyle='grey';
 
         }
         const l = this.signal.length
@@ -100,7 +101,7 @@ class App {
         // }
         // const fft = new FFT(l);
         // Perform the FFT
-        this.fft_result = fft(Array.from(fft_shift(this.signal)));
+        this.fft_result = this.sample_a_half(fft(fft_shift(Array.from(this.signal))));
         this.real_output =this.fft_result.map(complex => complex.re);
         this.imag_output =this.fft_result.map(complex => complex.im);
         this.abs_output = this.fft_result.map(complex => complex.abs());
@@ -120,8 +121,34 @@ class App {
     init_main_loop() {
         const animate = () => {
             this.draw_fft()      
-          }
-          setInterval(animate, 10)
+            requestAnimationFrame(animate)
+        }
+          requestAnimationFrame(animate)
+    }
+    canvas_y_to_signal_y(y) {
+        return -(y-this.h/2)/(this.h/2)
+    }
+    signal_y_to_canvas_y(y) {
+        return -y*(this.h/2)+this.h/2
+    }
+    canvas_x_to_signal_index(x) {
+        if (x < 0) {
+            return 0
+        }
+        if (x >= this.w) {
+            return n-1;
+        }
+        return Math.floor(this.n*(x/this.w))
+    }
+    signal_index_to_canvas_x(j) {
+        if (j < 0) {
+            return 0
+        }
+        if (j >= this.n) {
+            console.log('W');
+            return this.w;
+        }
+        return Math.floor(this.w*(j/this.n))
     }
     init_function_sketcher() {
         const sketcher_canvas = document.getElementById('sketcher')
@@ -130,47 +157,38 @@ class App {
         const dpr = this.dpr
         const _this = this;
         sketcher_canvas.addEventListener('mousedown', (event) => {
-            const x = event.offsetX * dpr;
-            if (x<0) {
-                return;
-            }
-            const y = event.offsetY * dpr;
-            // sketcher_context.beginPath()
+            const px = event.offsetX * dpr;
+            const py = event.offsetY * dpr;    
+            const idx = this.canvas_x_to_signal_index(px);
+            const value = this.canvas_y_to_signal_y(py);       
+        // sketcher_context.beginPath()
             // sketcher_context.moveTo(x,h);
             // sketcher_context.lineTo(x,y);
             // sketcher_context.stroke()
-            this._prev_x = x;
-            this._prev_y = y;
-            const value = -(y - h / 2)/(h*2);
-            this.signal[x] = value;
-            this.mouse_signal[x] = value;
+            this._prev_idx = px;
+            this._prev_y = value;
+            this.signal[idx] = value;
         });
         sketcher_canvas.addEventListener('mousemove', (event) => {
             if (1 & event.buttons) {
-                const x = event.offsetX * dpr;
-                const y = event.offsetY * dpr;
-                if (x<0) {
-                    return;
-                }                
-                const value = -(y - h / 2)/(h*2);
-                if (this._prev_x != null) {
-                    const sgn = Math.sign(x - this._prev_x)
-                    for (let j = 0; j < Math.abs(x - this._prev_x); ++j) {
-                        const interpolation_x = this._prev_x+j*sgn;
-                        const ratio = j/Math.abs(x - this._prev_x);
-                        const prev_value = -(this._prev_y - h / 2)/(h*2);
+                const px = event.offsetX * dpr;
+                const py = event.offsetY * dpr;    
+                const idx = this.canvas_x_to_signal_index(px);
+                const value = this.canvas_y_to_signal_y(py);
+                    if (this._prev_idx != null) {
+                    const sgn = Math.sign(idx - this._prev_idx)
+                    for (let j = 0; j < Math.abs(idx - this._prev_idx); ++j) {
+                        const interpolation_x = this._prev_idx+j*sgn;
+                        const ratio = j / Math.abs(idx - this._prev_idx);
+                        const prev_value = this._prev_y;
                         const interpolated_value = value + 
                         (value - prev_value)*ratio
                         this.signal[interpolation_x] = interpolated_value;
-
                     }
-                    
-                    
                 }
-                this._prev_x = x;
-                this._prev_y = y;
-                this.signal[x] = value;
-                this.mouse_signal[x] = value;
+                this._prev_idx = idx;
+                this._prev_y = value;
+                this.signal[idx] = value;
 
             }
 
@@ -201,7 +219,7 @@ class App {
 }
 
 window.addEventListener('load', () => {
-  const app = new App()
+  const app = new App(256)
   app.init();
   window._app = app;
 });

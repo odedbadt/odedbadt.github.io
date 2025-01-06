@@ -15,6 +15,9 @@
   display:grid;
   grid-template-columns: 30vw 70vw;
  }
+ #fft_title {
+    grid-column: span 2;
+ }
  #v-div-0 {
   display:grid;
   grid-template-rows: 3em 50vh 40vh 3em;

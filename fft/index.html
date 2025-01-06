@@ -4,7 +4,6 @@
     <title>FFT playroom</title>
     <link type="text/css" rel="stylesheet" href="static/style.css">
     <link rel="icon" type="image/x-icon" href="static/favicon.png">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
     <script type="module" src="static/js/bundle.js" defer></script>
 </head>
 
@@ -13,10 +12,10 @@
         <div class="func-view">
             <div>Editable input signal (draw here)</div>
             <canvas id="sketcher" width="256" height="256"></canvas>
+
         </div>
         <div id="v-div-0">
-            <div>FFT of signal</div>
-            <div></div>
+            <div id="fft_title">FFT of signal</div>
             <div class="func-view">
                 <div>log(Real)</div>
                 <canvas id="real" width="256" height="256"></canvas>
