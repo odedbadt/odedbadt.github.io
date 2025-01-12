@@ -58877,7 +58877,7 @@ class App {
         this.n = n
         this.signal = new Float64Array(n)
         for (let j = 0; j < n; ++j) {
-            this.signal[j]= Math.cos(j/n*Math.PI*20)*Math.exp(-(j-n/2)*(j-n/2)/1000);
+            this.signal[j]= Math.cos(j/n*Math.PI*20.1)*Math.exp(-(j-n/2)*(j-n/2)/1000);
         }
         this.init()
     }
@@ -58920,14 +58920,14 @@ class App {
             context.beginPath()
             context.fillRect(0,0,this.w,this.h)
             context.fill()
-            // context.strokeStyle='rgb(150,40,40)';
-            // for (let y = 0; y < this.n/scale; ++y) {
-            //     context.beginPath()
-            //     context.moveTo(0,y_transformation(y)*scale+this.n/2)
-            //     context.lineTo(this.n,y_transformation(y)*scale+this.n/2)
-            //     context.stroke();
-            // }
-            // context.beginPath()
+            context.strokeStyle='rgb(150,40,40)';
+            for (let y = -1; y < 1; y+=.25) {
+                context.beginPath()
+                context.moveTo(0,this.signal_y_to_canvas_y(y))
+                context.lineTo(this.n,this.signal_y_to_canvas_y(y))
+                context.stroke();
+            }
+            context.beginPath()
             context.strokeStyle='grey';
 
 
@@ -58938,11 +58938,27 @@ class App {
                 context.lineTo(x, y)
             }
             context.stroke()
+            context.beginPath()
+            // if (loop) {
+            //     context.strokeStyle='rgb(83, 141, 162)';
+
+            //     context.moveTo(this.signal_index_to_canvas_x(this.n-20), this.signal_y_to_canvas_y(signal[0]))
+            //     for (let j = 0; j < 20; j++) {
+            //         const x = this.signal_index_to_canvas_x(this.n-20+j)
+            //         const y = this.signal_y_to_canvas_y(signal[j])
+            //         context.lineTo(x, y)
+            //     }            
+            //     context.moveTo(this.signal_index_to_canvas_x(0), this.signal_y_to_canvas_y(signal[this.n-20]))
+            //     for (let j = 0; j < 20; j++) {
+            //         const x = this.signal_index_to_canvas_x(j);
+            //         const y = this.signal_y_to_canvas_y(signal[this.n-20+j])
+            //         context.lineTo(x, y)
+            //     }            
+            //     context.stroke()
+            // }
 
         }
         const l = this.signal.length
-        const real = new Float64Array(l);
-        const imag = new Float64Array(l);
         const real_canvas = document.getElementById('real')
         const real_context = real_canvas.getContext('2d', {'willreadFrequently': true})
         const imag_canvas = document.getElementById('imag')
@@ -58971,7 +58987,7 @@ class App {
         draw_signal(imag_context, this.imag_output, imag_canvas.height, true , (h*.25));
         draw_signal(abs_context, this.abs_output, real_canvas.height, true , (h*.1), true);
         draw_signal(arg_context, this.arg_output, imag_canvas.height, true , (h*.25/3.11));
-        draw_signal(signal_context, this.signal, signal_canvas.height, false, (h*2));
+        draw_signal(signal_context, this.signal, signal_canvas.height, false, (h*2), false, true);
         const scale = h*2
         const shift = false;
 

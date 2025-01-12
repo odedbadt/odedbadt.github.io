@@ -6,8 +6,8 @@ uniform float u_zoom;
 uniform vec2 u_mouse_coord;
 
 out vec4 fragColor;
-const int MAX_ITERATIONS = 10;
-const float SQUARED_BAILOUT = 1.0;
+const int MAX_ITERATIONS = 100;
+const float SQUARED_BAILOUT = 0.1;
 const float PI = 3.1415926535897932384626433832795;
 
 vec2 square(vec2 v) {
@@ -32,7 +32,13 @@ vec2 whole_power(vec2 v, int n) {
     float f_n = float(n);
     return pow(rad2,f_n/2.0)*vec2(cos(ang*f_n),sin(ang*f_n));
 }
+vec2 complex_inv(vec2 v) {
+    float ang = atan2(v);
+    float rad2 = v.x*v.x+v.y*v.y;
+    float rad = pow(rad2,0.5);
+    return (1.0/rad)*vec2(cos(ang),-sin(ang));
 
+}
 float norm2(vec2 v) {
     return v.x * v.x + v.y * v.y;
 }
@@ -45,25 +51,27 @@ float dist2(vec2 v1, vec2 v2) {
 float loop(vec2 S) {
     int C = MAX_ITERATIONS;
     vec2 A = S;
-    for (int i = 0; i < MAX_ITERATIONS; i++) {
+    for (int j = 0; j < MAX_ITERATIONS; j++) {
+        // if (norm2(A) < SQUARED_BAILOUT/1000.0) {
+        //     break;
+        // }
         if (dist2(whole_power(A, 3),vec2(1.0,0.0)) < SQUARED_BAILOUT) {
             break;
         }
-        A = 2.0*A/3.0 + 1.0/(3.0*square(A));    
+        A = 2.0/3.0*A + 1.0/3.0*complex_inv(whole_power(A,2));    
         C = C - 1;
     }
-    return (float(C)/float(MAX_ITERATIONS));
+    return pow(1.0 - (float(C)/float(MAX_ITERATIONS)),1.0/6.0);
 }
 void main( void ) {
     vec2 coord = (gl_FragCoord.xy - u_resolution.xy/2.0) / u_zoom;
-    float M = (atan2(coord))/PI/2.0;//
-    
+    float M = atan2(coord)/PI/2.0;
     M = loop(coord);
     float R = M;
     float G = M;
     float B = M;
     float screen_y = u_resolution.y- gl_FragCoord.y;
-
+    /*
     if ((abs(coord.x) < 1.0/u_zoom) || (abs(coord.y) < 1.0/u_zoom)) {
         R = 0.0;
         G = 0.0;
@@ -85,6 +93,7 @@ void main( void ) {
         B = 0.0;
 
     }
+    */
     fragColor = vec4(R, G, B, 1.0);
 }
 `

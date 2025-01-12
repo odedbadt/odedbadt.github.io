@@ -32,7 +32,6 @@ float loop(vec2 S, vec2 P) {
 void main( void ) {
     float zoom = 0.4*min(u_resolution.x, u_resolution.y);
     vec2 coord = (gl_FragCoord.xy - u_resolution.xy/2.0) / u_zoom;
-    coord.x = coord.x;
     float M = loop(vec2(0.0,0.0), vec2(coord.x, coord.y));
     float R = M;
     float G = M;

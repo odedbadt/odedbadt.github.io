@@ -1,4 +1,5 @@
 import { NEWTON_FRAGMENT_SHADER, VERTEX_SHADER } from "./shaders.js";
+import { derivate } from mathjs
 
 
 function init() {
@@ -42,11 +43,9 @@ function init() {
     }
     function onWindowResize( event ) {
         newton_renderer.setSize( newton_canvas.clientWidth, newton_canvas.clientHeight );
-        newton_uniforms.u_resolution.value.x = newton_renderer.domElement.width;
-        newton_uniforms.u_resolution.value.y = newton_renderer.domElement.height;
-        newton_uniforms.u_zoom.value = 0.01 * Math.min(
-            newton_renderer.domElement.width, 
-            newton_renderer.domElement.height);
+        newton_uniforms.u_resolution.value.x = newton_canvas.width;
+        newton_uniforms.u_resolution.value.y = newton_canvas.height;
+        newton_uniforms.u_zoom.value = 100;
         render();
     }
     onWindowResize();

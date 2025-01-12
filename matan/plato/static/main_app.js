@@ -382,7 +382,6 @@ export class App {
       const canvas_x = event.offsetX;
       const canvas_y = event.offsetY;
       return [canvas_x * dpr, canvas_y * dpr];
-      return [event.offsetX, event.offsetY];
     }
     const mirror_coordinates = (coords) => {
       return [w - coords[1], h - coords[0]]

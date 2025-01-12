@@ -1,4 +1,6 @@
 export const VS_SOURCE = `#version 300 es
+precision mediump float;
+
 uniform int numVerts;
 in vec4 aVertexColor;
 in vec3 aVertexPosition;
